@@ -38,7 +38,7 @@ export function AgentDetailsSidebar({ selectedAgentId }: AgentDetailsSidebarProp
 
         if (response.success && response.data) {
           setSelectedTeam(response.data);
-          
+
           // Fetch descriptions for all tools
           const descriptions: Record<string, string> = {};
           if (response.data.agent.spec.tools && Array.isArray(response.data.agent.spec.tools)) {
@@ -51,7 +51,7 @@ export function AgentDetailsSidebar({ selectedAgentId }: AgentDetailsSidebarProp
                 if (tool.type === "McpServer" && tool.mcpServer?.toolNames?.[0]) {
                   const toolName = tool.mcpServer.toolNames[0];
                   const mcpProvider = "autogen_ext.tools.mcp.SseMcpToolAdapter";
-                  
+
                   const toolResponse = await getToolByProvider(allTools.data, mcpProvider, toolName);
                   descriptions[toolIdentifier] = toolResponse?.description 
                     ? toolResponse.description 
@@ -164,7 +164,17 @@ export function AgentDetailsSidebar({ selectedAgentId }: AgentDetailsSidebarProp
           <ScrollArea>
             <SidebarGroup>
               <SidebarGroupLabel className="font-bold">
-                {selectedTeam?.agent.metadata.name} ({selectedTeam?.model})
+                {selectedTeam?.agent.metadata.name} 
+                {selectedTeam?.agent.metadata.namespace && (
+                  <span className="text-muted-foreground ml-1">
+                    ({selectedTeam.agent.metadata.namespace})
+                  </span>
+                )}
+                {selectedTeam?.model && (
+                  <span className="text-sm ml-2">
+                    {selectedTeam.model}
+                  </span>
+                )}
               </SidebarGroupLabel>
               <p className="text-sm flex px-2 text-muted-foreground">{selectedTeam?.agent.spec.description}</p>
             </SidebarGroup>

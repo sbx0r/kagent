@@ -10,6 +10,7 @@ import { isResourceNameValid } from "@/lib/utils";
 
 interface ValidationErrors {
   name?: string;
+  namespace?: string;
   description?: string;
   systemPrompt?: string;
   model?: string;
@@ -19,6 +20,7 @@ interface ValidationErrors {
 
 export interface AgentFormData {
   name: string;
+  namespace: string;
   description: string;
   systemPrompt: string;
   model: Partial<ModelConfig>;

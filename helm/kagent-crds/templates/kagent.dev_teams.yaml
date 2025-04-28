@@ -58,7 +58,15 @@ spec:
                 type: string
               participants:
                 items:
-                  type: string
+                  description: ParticipantRef is a reference to a participant
+                  properties:
+                    name:
+                      type: string
+                    namespace:
+                      type: string
+                  required:
+                  - name
+                  type: object
                 type: array
               roundRobinTeamConfig:
                 type: object

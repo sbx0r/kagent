@@ -9,9 +9,10 @@ import { useAgents } from "./AgentsProvider";
 
 interface DeleteButtonProps {
   teamLabel: string;
+  namespace: string;
 }
 
-export function DeleteButton({ teamLabel }: DeleteButtonProps) {
+export function DeleteButton({ teamLabel, namespace }: DeleteButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const { refreshTeams } = useAgents();
@@ -23,7 +24,7 @@ export function DeleteButton({ teamLabel }: DeleteButtonProps) {
 
     try {
       setIsDeleting(true);
-      await deleteTeam(teamLabel);
+      await deleteTeam(teamLabel, namespace);
 
       await refreshTeams();
     } catch (error) {

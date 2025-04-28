@@ -21,6 +21,7 @@ interface OnboardingStateData {
     modelConfigName?: string;
     modelName?: string;
     agentName?: string;
+    agentNamespace?: string;
     agentDescription?: string;
     agentInstructions?: string;
     selectedTools?: AgentTool[];
@@ -28,6 +29,7 @@ interface OnboardingStateData {
 
 export const K8S_AGENT_DEFAULTS = {
     name: "my-first-k8s-agent",
+    namespace: "default",
     description: "This agent can interact with the Kubernetes API to get information about the cluster.",
     instructions: `You're a friendly and helpful agent that uses Kubernetes tools to answer users questions about the cluster.
 
@@ -48,6 +50,7 @@ export function OnboardingWizard({ onOnboardingComplete, onSkip }: OnboardingWiz
   const [isLoading, setIsLoading] = useState(false);
   const [onboardingData, setOnboardingData] = useState<OnboardingStateData>({
       agentName: K8S_AGENT_DEFAULTS.name,
+      agentNamespace: K8S_AGENT_DEFAULTS.namespace,
       agentDescription: K8S_AGENT_DEFAULTS.description,
       agentInstructions: K8S_AGENT_DEFAULTS.instructions,
       selectedTools: [],
@@ -107,6 +110,7 @@ export function OnboardingWizard({ onOnboardingComplete, onSkip }: OnboardingWiz
       try {
           const agentPayload: AgentFormData = {
               name: onboardingData.agentName,
+              namespace: onboardingData.agentNamespace || "",
               description: onboardingData.agentDescription || "",
               systemPrompt: onboardingData.agentInstructions,
               model: { name: onboardingData.modelConfigName },

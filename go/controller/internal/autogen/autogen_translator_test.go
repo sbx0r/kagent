@@ -123,9 +123,13 @@ var _ = Describe("AutogenClient", func() {
 				Namespace: namespace,
 			},
 			Spec: v1alpha1.TeamSpec{
-				Participants: []string{
-					participant1.Name,
-					participant2.Name,
+				Participants: []v1alpha1.ParticipantRef{
+					v1alpha1.ParticipantRef{
+						Name: participant1.Name,
+					},
+					v1alpha1.ParticipantRef{
+						Name: participant2.Name,
+					},
 				},
 				Description:        "a team that tests things",
 				ModelConfig:        modelConfig.Name,

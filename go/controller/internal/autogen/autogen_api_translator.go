@@ -121,6 +121,10 @@ func translateToolServerConfig(config v1alpha1.ToolServerConfig) (string, *api.T
 	return "", nil, fmt.Errorf("unsupported tool server config")
 }
 
+func getFullResourceName(namespace, name string) string {
+	return fmt.Sprintf("%s/%s", namespace, name)
+}
+
 func convertDurationToSeconds(timeout string) (int, error) {
 	if timeout == "" {
 		return 0, nil
@@ -214,7 +218,12 @@ func (a *apiTranslator) translateGroupChatForAgent(
 			APIVersion: "kagent.dev/v1alpha1",
 		},
 		Spec: v1alpha1.TeamSpec{
-			Participants:         []string{agent.Name},
+			Participants: []v1alpha1.ParticipantRef{
+				v1alpha1.ParticipantRef{
+					Name:      agent.Name,
+					Namespace: agent.Namespace,
+				},
+			},
 			Description:          agent.Spec.Description,
 			ModelConfig:          modelConfig.Name,
 			RoundRobinTeamConfig: &v1alpha1.RoundRobinTeamConfig{},
@@ -279,14 +288,20 @@ func (a *apiTranslator) translateGroupChatForTeam(
 
 	var participants []*api.Component
 
-	for _, agentName := range team.Spec.Participants {
+	for _, participantRef := range team.Spec.Participants {
+		namespace := participantRef.Namespace
+		if namespace == "" {
+			namespace = team.Namespace
+		}
+
 		agent := &v1alpha1.Agent{}
-		err := fetchObjKube(
+		err := a.kube.Get(
 			ctx,
-			a.kube,
+			types.NamespacedName{
+				Name:      participantRef.Name,
+				Namespace: namespace,
+			},
 			agent,
-			agentName,
-			team.Namespace,
 		)
 		if err != nil {
 			return nil, err
@@ -397,7 +412,7 @@ func (a *apiTranslator) translateGroupChatForTeam(
 		return nil, fmt.Errorf("no team config specified")
 	}
 
-	teamConfig.Label = team.Name
+	teamConfig.Label = getFullResourceName(team.Namespace, team.Name)
 
 	return &autogen_client.Team{
 		Component: teamConfig,
@@ -449,13 +464,18 @@ func simpleRoundRobinTeam(agent *v1alpha1.Agent, name string) *v1alpha1.Team {
 			APIVersion: "kagent.dev/v1alpha1",
 		},
 		Spec: v1alpha1.TeamSpec{
-			Participants:         []string{agent.Name},
+			Participants: []v1alpha1.ParticipantRef{
+				{
+					Name:      agent.Name,
+					Namespace: agent.Namespace,
+				},
+			},
 			Description:          agent.Spec.Description,
 			ModelConfig:          agent.Spec.ModelConfigRef,
 			RoundRobinTeamConfig: &v1alpha1.RoundRobinTeamConfig{},
 			TerminationCondition: v1alpha1.TerminationCondition{
 				TextMessageTermination: &v1alpha1.TextMessageTermination{
-					Source: convertToPythonIdentifier(agent.Name),
+					Source: convertToPythonIdentifier(fmt.Sprintf("%s__%s", agent.Namespace, agent.Name)),
 				},
 			},
 		},
@@ -536,6 +556,7 @@ func (a *apiTranslator) translateAssistantAgent(
 				Version:       1,
 				Config: api.MustToConfig(&api.TeamToolConfig{
 					Name:        toolAgent.Name,
+					Namespace:   toolAgent.Namespace,
 					Description: toolAgent.Spec.Description,
 					Team:        autogenTool.Component,
 				}),
@@ -554,7 +575,7 @@ func (a *apiTranslator) translateAssistantAgent(
 	}
 
 	cfg := &api.AssistantAgentConfig{
-		Name:         convertToPythonIdentifier(agent.Name),
+		Name:         convertToPythonIdentifier(fmt.Sprintf("%s__%s", agent.Namespace, agent.Name)),
 		Tools:        tools,
 		ModelContext: modelContext,
 		Description:  agent.Spec.Description,

@@ -24,11 +24,19 @@ const (
 	TeamConditionTypeAccepted = "Accepted"
 )
 
+// ParticipantRef is a reference to a participant
+type ParticipantRef struct {
+	Name string `json:"name"`
+
+	// +kubebuilder:validation:Optional
+	Namespace string `json:"namespace,omitempty"`
+}
+
 // TeamSpec defines the desired state of Team.
 type TeamSpec struct {
-	Participants []string `json:"participants"`
-	Description  string   `json:"description"`
-	ModelConfig  string   `json:"modelConfig"`
+	Participants []ParticipantRef `json:"participants"`
+	Description  string           `json:"description"`
+	ModelConfig  string           `json:"modelConfig"`
 	// +kubebuilder:validation:Optional
 	RoundRobinTeamConfig *RoundRobinTeamConfig `json:"roundRobinTeamConfig"`
 	// +kubebuilder:validation:Optional

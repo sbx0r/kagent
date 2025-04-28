@@ -50,7 +50,7 @@ func (h *TeamsHandler) HandleListTeams(w ErrorResponseWriter, r *http.Request) {
 	teamsWithID := make([]map[string]interface{}, 0)
 	for _, team := range agentList.Items {
 		log.V(1).Info("Processing team", "teamName", team.Name)
-		autogenTeam, err := h.AutogenClient.GetTeam(convertToKubernetesIdentifier(team.Name), userID)
+		autogenTeam, err := h.AutogenClient.GetTeam(convertToKubernetesIdentifier(team.Namespace+"/"+team.Name), userID)
 		if err != nil {
 			w.RespondWithError(errors.NewInternalServerError("Failed to get team from Autogen", err))
 			return
@@ -103,7 +103,7 @@ func (h *TeamsHandler) HandleUpdateTeam(w ErrorResponseWriter, r *http.Request) 
 	existingTeam := &v1alpha1.Agent{}
 	if err := h.KubeClient.Get(r.Context(), types.NamespacedName{
 		Name:      teamRequest.Name,
-		Namespace: common.GetResourceNamespace(),
+		Namespace: teamRequest.Namespace,
 	}, existingTeam); err != nil {
 		w.RespondWithError(errors.NewInternalServerError("Failed to get team", err))
 		return
@@ -226,12 +226,15 @@ func (h *TeamsHandler) HandleGetTeam(w ErrorResponseWriter, r *http.Request) {
 
 	teamLabel := convertToKubernetesIdentifier(autogenTeam.Component.Label)
 	log = log.WithValues("teamLabel", teamLabel)
+	parts := strings.Split(teamLabel, "/")
+	namespace := parts[0]
+	name := parts[1]
 
 	log.V(1).Info("Getting team from Kubernetes")
 	team := &v1alpha1.Agent{}
 	if err := h.KubeClient.Get(r.Context(), types.NamespacedName{
-		Name:      teamLabel,
-		Namespace: common.GetResourceNamespace(),
+		Name:      name,
+		Namespace: namespace,
 	}, team); err != nil {
 		w.RespondWithError(errors.NewNotFoundError("Team not found in Kubernetes", err))
 		return
@@ -261,7 +264,7 @@ func (h *TeamsHandler) HandleGetTeam(w ErrorResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusOK, teamWithID)
 }
 
-// HandleDeleteTeam handles DELETE /api/teams/{teamLabel} requests
+// HandleDeleteTeam handles DELETE /api/teams/{teamNamespace}/{teamName} requests
 func (h *TeamsHandler) HandleDeleteTeam(w ErrorResponseWriter, r *http.Request) {
 	log := ctrllog.FromContext(r.Context()).WithName("teams-handler").WithValues("operation", "delete")
 
@@ -272,11 +275,18 @@ func (h *TeamsHandler) HandleDeleteTeam(w ErrorResponseWriter, r *http.Request) 
 	}
 	log = log.WithValues("teamLabel", teamLabel)
 
+	teamNamespace, err := GetPathParam(r, "teamNamespace")
+	if err != nil {
+		w.RespondWithError(errors.NewBadRequestError("Failed to get namespace from path", err))
+		return
+	}
+	log = log.WithValues("teamNamespace", teamNamespace)
+
 	log.V(1).Info("Getting team from Kubernetes")
 	team := &v1alpha1.Agent{}
 	if err := h.KubeClient.Get(r.Context(), types.NamespacedName{
 		Name:      teamLabel,
-		Namespace: common.GetResourceNamespace(),
+		Namespace: teamNamespace,
 	}, team); err != nil {
 		w.RespondWithError(errors.NewNotFoundError("Team not found in Kubernetes", err))
 		return
