@@ -402,16 +402,22 @@ export interface ResourceMetadata {
   namespace?: string;
 }
 
-export type ToolProviderType = "Inline" | "McpServer";
+export type ToolProviderType = "Builtin" | "McpServer" | "Agent"
 
-export interface AgentTool {
+export interface Tool {
   type: ToolProviderType;
-  inline?: InlineTool;
+  builtin?: BuiltinTool;
   mcpServer?: McpServerTool;
+  agent?: AgentTool;
 }
 
-export interface InlineTool {
-  provider: string;
+export interface AgentTool {
+  ref: string;
+  description?: string;
+}
+
+export interface BuiltinTool {
+  name: string;
   description?: string;
   config?: any;
   label?: string;
@@ -425,9 +431,9 @@ export interface McpServerTool {
 export interface AgentResourceSpec {
   description: string;
   systemMessage: string;
-  tools: AgentTool[];
+  tools: Tool[];
   // Name of the model config resource
-  modelConfigRef: string;
+  modelConfig: string;
 }
 export interface Agent {
   metadata: ResourceMetadata;
@@ -457,7 +463,7 @@ export interface ToolServerConfiguration {
   sse?: SseMcpServerConfig;
 }
 
-export interface Tool {
+export interface ToolComponent {
   name: string;
   component: Component<ToolConfig>;
 }
@@ -465,5 +471,4 @@ export interface Tool {
 export interface ToolServerWithTools {
   name: string;
   config: ToolServerConfiguration;
-  discoveredTools: Tool[];
-}
+  discoveredTools: ToolComponent[];
