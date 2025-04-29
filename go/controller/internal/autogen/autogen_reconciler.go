@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/kagent-dev/kagent/go/autogen/api"
@@ -59,25 +60,81 @@ func NewAutogenReconciler(
 
 func (a *autogenReconciler) ReconcileAutogenAgent(ctx context.Context, req ctrl.Request) error {
 	// reconcile the agent team itself
+
+	// TODO(sbx0r): missing finalizer logic
+
 	agent := &v1alpha1.Agent{}
 	if err := a.kube.Get(ctx, req.NamespacedName, agent); err != nil {
-		return fmt.Errorf("failed to get agent %s: %v", req.Name, err)
-	}
-	if err := a.reconcileAgents(ctx, agent); err != nil {
-		return fmt.Errorf("failed to reconcile agent %s: %v", req.Name, err)
+		if errors.IsNotFound(err) {
+			return a.handleAgentDeletion(req)
+		}
+
+		return fmt.Errorf("failed to get agent %s/%s: %v", req.Namespace, req.Name, err)
 	}
 
-	// find and reconcile all teams which use this agent
+	return a.handleExistingAgent(ctx, agent, req)
+}
+
+func (a *autogenReconciler) handleAgentDeletion(req ctrl.Request) error {
+	// TODO(sbx0r): handle deletion of agents with multiple teams assignment
+	// agents, err := a.findTeamsUsingAgent(ctx, req)
+	// if err != nil {
+	// 	return fmt.Errorf("failed to find teams for agent %s/%s: %v", req.Namespace, req.Name, err)
+	// }
+	// if len(agents) > 1 {
+	// 	reconcileLog.Info("agent with multiple dependencies was deleted",
+	// 	"namespace", req.Namespace,
+	// 	"name", req.Name,
+	// 	"agents", agents)
+	// }
+
+	team, err := a.autogenClient.GetTeam(req.Name, GlobalUserID)
+	if err != nil {
+		return fmt.Errorf("failed to get agent on agent deletion %s/%s: %v",
+			req.Namespace, req.Name, err)
+	}
+
+	if team != nil {
+		if err = a.autogenClient.DeleteTeam(team.Id, team.UserID); err != nil {
+			return fmt.Errorf("failed to delete agent %s/%s: %v",
+				req.Namespace, req.Name, err)
+		}
+	}
+
+	reconcileLog.Info("agent was deleted", "namespace", req.Namespace, "name", req.Name)
+	return nil
+}
+
+func (a *autogenReconciler) handleExistingAgent(ctx context.Context, agent *v1alpha1.Agent, req ctrl.Request) error {
+	isNewAgent := len(agent.Status.Conditions) == 0 &&
+		time.Since(agent.CreationTimestamp.Time) < time.Minute
+	isUpdatedAgent := agent.Generation > agent.Status.ObservedGeneration
+
+	if isNewAgent {
+		reconcileLog.Info("new agent was created",
+			"namespace", req.Namespace,
+			"name", req.Name,
+			"generation", agent.Generation)
+	} else if isUpdatedAgent {
+		reconcileLog.Info("agent was updated",
+			"namespace", req.Namespace,
+			"name", req.Name,
+			"oldGeneration", agent.Status.ObservedGeneration,
+			"newGeneration", agent.Generation)
+	}
+
+	if err := a.reconcileAgents(ctx, agent); err != nil {
+		return fmt.Errorf("failed to reconcile agent %s/%s: %v",
+			req.Namespace, req.Name, err)
+	}
+
 	teams, err := a.findTeamsUsingAgent(ctx, req)
 	if err != nil {
-		return fmt.Errorf("failed to find teams for agent %s: %v", req.Name, err)
+		return fmt.Errorf("failed to find teams for agent %s/%s: %v",
+			req.Namespace, req.Name, err)
 	}
 
-	return a.reconcileAgentStatus(
-		ctx,
-		agent,
-		a.reconcileTeams(ctx, teams...),
-	)
+	return a.reconcileAgentStatus(ctx, agent, a.reconcileTeams(ctx, teams...))
 }
 
 func (a *autogenReconciler) reconcileAgentStatus(ctx context.Context, agent *v1alpha1.Agent, err error) error {
@@ -445,7 +502,6 @@ func (a *autogenReconciler) findAgentsUsingModel(ctx context.Context, req ctrl.R
 	if err := a.kube.List(
 		ctx,
 		&agentsList,
-		client.InNamespace(req.Namespace),
 	); err != nil {
 		return nil, fmt.Errorf("failed to list agents: %v", err)
 	}
@@ -466,7 +522,6 @@ func (a *autogenReconciler) findAgentsUsingApiKeySecret(ctx context.Context, req
 	if err := a.kube.List(
 		ctx,
 		&modelsList,
-		client.InNamespace(req.Namespace),
 	); err != nil {
 		return nil, fmt.Errorf("failed to list model configs: %v", err)
 	}
@@ -509,7 +564,6 @@ func (a *autogenReconciler) findTeamsUsingAgent(ctx context.Context, req ctrl.Re
 	if err := a.kube.List(
 		ctx,
 		&teamsList,
-		client.InNamespace(req.Namespace),
 	); err != nil {
 		return nil, fmt.Errorf("failed to list teams: %v", err)
 	}
@@ -533,7 +587,6 @@ func (a *autogenReconciler) findTeamsUsingModel(ctx context.Context, req ctrl.Re
 	if err := a.kube.List(
 		ctx,
 		&teamsList,
-		client.InNamespace(req.Namespace),
 	); err != nil {
 		return nil, fmt.Errorf("failed to list teams: %v", err)
 	}
@@ -554,7 +607,6 @@ func (a *autogenReconciler) findTeamsUsingApiKeySecret(ctx context.Context, req 
 	if err := a.kube.List(
 		ctx,
 		&modelsList,
-		client.InNamespace(req.Namespace),
 	); err != nil {
 		return nil, fmt.Errorf("failed to list model configs: %v", err)
 	}
@@ -597,7 +649,6 @@ func (a *autogenReconciler) findAgentsUsingToolServer(ctx context.Context, req c
 	if err := a.kube.List(
 		ctx,
 		&agentsList,
-		client.InNamespace(req.Namespace),
 	); err != nil {
 		return nil, fmt.Errorf("failed to list agents: %v", err)
 	}

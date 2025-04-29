@@ -33,6 +33,7 @@ func (c *GenericToolConfig) FromConfig(config map[string]interface{}) error {
 
 type TeamToolConfig struct {
 	Name        string     `json:"name"`
+	Namespace   string     `json:"namespace"`
 	Description string     `json:"description"`
 	Team        *Component `json:"team"`
 }

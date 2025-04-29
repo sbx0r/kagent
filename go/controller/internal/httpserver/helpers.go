@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
+
+	common "github.com/kagent-dev/kagent/go/controller/internal/utils"
 )
 
 // Common HTTP response helpers
@@ -29,4 +32,16 @@ func getUserID(r *http.Request) (string, error) {
 		return "", fmt.Errorf("user_id is required")
 	}
 	return userID, nil
+}
+
+func parseNamespacedName(namespacedName string) (namespace, name string) {
+	parts := strings.Split(namespacedName, "/")
+	if len(parts) == 2 {
+		namespace = parts[0]
+		name = parts[1]
+	} else {
+		namespace = common.GetResourceNamespace()
+		name = namespacedName
+	}
+	return
 }

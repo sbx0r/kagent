@@ -39,6 +39,13 @@ spec:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: metadata.namespace
+            - name: WATCH_NAMESPACES
+              value: {{ join "," .Values.controller.allowedNamespaces | quote }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.ports.controller.targetPort }}
+              protocol: TCP
+
         - name: app
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}

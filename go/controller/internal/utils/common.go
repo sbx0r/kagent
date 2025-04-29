@@ -1,9 +1,11 @@
 package common
 
-import "os"
+import (
+	"os"
+)
 
 func GetResourceNamespace() string {
-	if val := os.Getenv("KAGENT_NAMESPACE"); val != "" {
+	if val := os.Getenv("POD_NAMESPACE"); val != "" {
 		return val
 	}
 	return "kagent"

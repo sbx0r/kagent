@@ -11,10 +11,13 @@ openai:
   secretKey: "OPENAI_API_KEY"
 
 controller:
+  allowedNamespaces:
+    - kagent
+    - kube-system
   image:
     registry: ghcr.io
     repository: kagent-dev/kagent/controller
-    tag: ""  # Will default to global, then Chart version
+    tag: "" # Will default to global, then Chart version
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -28,7 +31,7 @@ app:
   image:
     registry: ghcr.io
     repository: kagent-dev/kagent/app
-    tag: ""  # Will default to global, then Chart version
+    tag: "" # Will default to global, then Chart version
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -42,7 +45,7 @@ ui:
   image:
     registry: ghcr.io
     repository: kagent-dev/kagent/ui
-    tag: ""  # Will default to global, then Chart version
+    tag: "" # Will default to global, then Chart version
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -51,7 +54,6 @@ ui:
     limits:
       cpu: 1000m
       memory: 1Gi
-  
 
 service:
   type: ClusterIP
@@ -62,6 +64,9 @@ service:
     app:
       port: 8081
       targetPort: 8081
+    controller:
+      port: 8083
+      targetPort: 8083
 
 imagePullSecrets: []
 nameOverride: ""
@@ -69,10 +74,12 @@ fullnameOverride: ""
 
 podAnnotations: {}
 
-podSecurityContext: {}
+podSecurityContext:
+  {}
   # fsGroup: 2000
 
-securityContext: {}
+securityContext:
+  {}
   # capabilities:
   #   drop:
   #   - ALL

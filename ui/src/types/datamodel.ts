@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export type ComponentType = "team" | "agent" | "model" | "tool" | "termination" | "chat_completion_context" | "tool_server";
+export type ComponentType =
+  | "team"
+  | "agent"
+  | "model"
+  | "tool"
+  | "termination"
+  | "chat_completion_context"
+  | "tool_server";
 
 export interface Component<T extends ComponentConfig> {
   provider: string;
@@ -66,7 +73,13 @@ export interface ToolCallResultMessageConfig extends BaseMessageConfig {
   content: FunctionExecutionResult[];
 }
 
-export type AgentMessageConfig = TextMessageConfig | MultiModalMessageConfig | StopMessageConfig | HandoffMessageConfig | ToolCallMessageConfig | ToolCallResultMessageConfig;
+export type AgentMessageConfig =
+  | TextMessageConfig
+  | MultiModalMessageConfig
+  | StopMessageConfig
+  | HandoffMessageConfig
+  | ToolCallMessageConfig
+  | ToolCallResultMessageConfig;
 
 // Tool Configs
 export interface FunctionToolConfig {
@@ -237,9 +250,16 @@ export interface TextMessageTerminationConfig {
 }
 
 // Config type unions based on provider
-export type TeamConfig = SelectorGroupChatConfig | RoundRobinGroupChatConfig | TaskAgentConfig;
+export type TeamConfig =
+  | SelectorGroupChatConfig
+  | RoundRobinGroupChatConfig
+  | TaskAgentConfig;
 
-export type AgentConfig = MultimodalWebSurferConfig | AssistantAgentConfig | UserProxyAgentConfig | TaskAgentConfig;
+export type AgentConfig =
+  | MultimodalWebSurferConfig
+  | AssistantAgentConfig
+  | UserProxyAgentConfig
+  | TaskAgentConfig;
 
 export type ModelConfig = OpenAIClientConfig | AzureOpenAIClientConfig;
 
@@ -249,9 +269,20 @@ export type ToolServerConfig = StdioMcpServerConfig | SseMcpServerConfig;
 
 export type ChatCompletionContextConfig = UnboundedChatCompletionContextConfig;
 
-export type TerminationConfig = OrTerminationConfig | MaxMessageTerminationConfig | TextMentionTerminationConfig | TextMessageTerminationConfig;
+export type TerminationConfig =
+  | OrTerminationConfig
+  | MaxMessageTerminationConfig
+  | TextMentionTerminationConfig
+  | TextMessageTerminationConfig;
 
-export type ComponentConfig = TeamConfig | AgentConfig | ModelConfig | ToolConfig | TerminationConfig | ChatCompletionContextConfig | ToolServerConfig;
+export type ComponentConfig =
+  | TeamConfig
+  | AgentConfig
+  | ModelConfig
+  | ToolConfig
+  | TerminationConfig
+  | ChatCompletionContextConfig
+  | ToolServerConfig;
 
 // DB Models
 export interface DBModel {
@@ -311,7 +342,15 @@ export interface SessionRuns {
 }
 
 export interface WebSocketMessage {
-  type: "message" | "result" | "completion" | "input_request" | "error" | "llm_call_event" | "system" | "message_chunk";
+  type:
+    | "message"
+    | "result"
+    | "completion"
+    | "input_request"
+    | "error"
+    | "llm_call_event"
+    | "system"
+    | "message_chunk";
   data?: AgentMessageConfig | TaskResult;
   status?: RunStatus;
   error?: string;
@@ -344,7 +383,14 @@ export interface GetSessionRunsResponse {
   runs: Run[];
 }
 
-export type RunStatus = "created" | "active" | "awaiting_input" | "timeout" | "complete" | "error" | "stopped";
+export type RunStatus =
+  | "created"
+  | "active"
+  | "awaiting_input"
+  | "timeout"
+  | "complete"
+  | "error"
+  | "stopped";
 
 export interface SessionWithRuns {
   session: Session;
@@ -426,4 +472,3 @@ export interface ToolServerWithTools {
   name: string;
   config: ToolServerConfiguration;
   discoveredTools: ToolComponent[];
-}

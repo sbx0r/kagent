@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/go-logr/logr"
@@ -40,8 +41,10 @@ import (
 
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
+	"k8s.io/apimachinery/pkg/util/validation"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/certwatcher"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
@@ -55,9 +58,9 @@ import (
 )
 
 var (
-	scheme       = runtime.NewScheme()
-	setupLog     = ctrl.Log.WithName("setup")
-	podNamespace = os.Getenv("POD_NAMESPACE")
+	scheme          = runtime.NewScheme()
+	setupLog        = ctrl.Log.WithName("setup")
+	kagentNamespace = os.Getenv("POD_NAMESPACE")
 )
 
 func init() {
@@ -67,10 +70,6 @@ func init() {
 	// +kubebuilder:scaffold:scheme
 
 	ctrl.SetLogger(zap.New(zap.UseDevMode(true)))
-
-	if podNamespace == "" {
-		podNamespace = "kagent"
-	}
 }
 
 // nolint:gocyclo
@@ -110,7 +109,7 @@ func main() {
 	flag.StringVar(&autogenStudioWsURL, "autogen-ws-url", "ws://127.0.0.1:8081/api/ws", "The base url of the Autogen Studio websocket server.")
 
 	flag.StringVar(&defaultModelConfig.Name, "default-model-config-name", "default-model-config", "The name of the default model config.")
-	flag.StringVar(&defaultModelConfig.Namespace, "default-model-config-namespace", podNamespace, "The namespace of the default model config.")
+	flag.StringVar(&defaultModelConfig.Namespace, "default-model-config-namespace", kagentNamespace, "The namespace of the default model config.")
 	flag.StringVar(&httpServerAddr, "http-server-address", ":8083", "The address the HTTP server binds to.")
 
 	opts := zap.Options{
@@ -210,7 +209,7 @@ func main() {
 		})
 	}
 
-	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
+	managerOptions := ctrl.Options{
 		Scheme:                 scheme,
 		Metrics:                metricsServerOptions,
 		WebhookServer:          webhookServer,
@@ -228,7 +227,19 @@ func main() {
 		// if you are doing or is intended to do any operation such as perform cleanups
 		// after the manager stops then its usage might be unsafe.
 		// LeaderElectionReleaseOnCancel: true,
-	})
+	}
+
+	configureNamespacesToWatch(&managerOptions)
+
+	watchNamespaces, err := getWatchNamespacesFromEnv()
+	var allowedNamespaces []string
+	if err == nil && watchNamespaces != "" {
+		allowedNamespaces = strings.Split(watchNamespaces, ",")
+		allowedNamespaces = filterValidNamespaces(allowedNamespaces)
+	}
+	namespaceFilter := controller.NewNamespaceFilterPredicate(allowedNamespaces)
+
+	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), managerOptions)
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")
 		os.Exit(1)
@@ -267,7 +278,7 @@ func main() {
 		Client:     kubeClient,
 		Scheme:     mgr.GetScheme(),
 		Reconciler: autogenReconciler,
-	}).SetupWithManager(mgr); err != nil {
+	}).SetupWithManager(mgr, namespaceFilter); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "AutogenTeam")
 		os.Exit(1)
 	}
@@ -275,7 +286,7 @@ func main() {
 		Client:     kubeClient,
 		Scheme:     mgr.GetScheme(),
 		Reconciler: autogenReconciler,
-	}).SetupWithManager(mgr); err != nil {
+	}).SetupWithManager(mgr, namespaceFilter); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "AutogenAgent")
 		os.Exit(1)
 	}
@@ -376,4 +387,88 @@ func waitForReady(f func() error, timeout, interval time.Duration) error {
 
 		time.Sleep(interval)
 	}
+}
+
+// configureNamespacesToWatch sets up namespace filtering for the controller
+// based on the WATCH_NAMESPACES environment variable.
+// Returns the map of namespaces to watch if specific namespaces are configured.
+func configureNamespacesToWatch(managerOptions *ctrl.Options) map[string]cache.Config {
+	watchNamespaces, err := getWatchNamespacesFromEnv()
+	if err != nil {
+		setupLog.Error(err, "unable to get watch namespaces, defaulting to all namespace mode")
+		return nil
+	}
+
+	if watchNamespaces == "" {
+		setupLog.Info("No namespaces specified, watching all namespaces")
+		return nil
+	}
+
+	namespacesList := strings.Split(watchNamespaces, ",")
+	validNamespaces := filterValidNamespaces(namespacesList)
+
+	if len(validNamespaces) == 0 {
+		setupLog.Info("No valid namespaces specified, watching all namespaces")
+		return nil
+	}
+
+	setupLog.Info(fmt.Sprintf("Watching namespaces: %s", strings.Join(validNamespaces, ", ")))
+
+	namespacesMap := buildNamespacesCacheOptions(validNamespaces)
+	if managerOptions != nil {
+		managerOptions.Cache = cache.Options{
+			DefaultNamespaces: namespacesMap,
+		}
+	}
+
+	return namespacesMap
+}
+
+// filterValidNamespaces filters out empty or invalid namespace names
+// and logs warnings for invalid names.
+func filterValidNamespaces(namespaces []string) []string {
+	var validNamespaces []string
+
+	for _, ns := range namespaces {
+		if ns == "" {
+			continue
+		}
+
+		// Use Kubernetes validator to verify namespace name
+		if errs := validation.IsDNS1123Label(ns); len(errs) > 0 {
+			setupLog.Info(fmt.Sprintf("Ignoring invalid namespace name: %s, errors: %s",
+				ns, strings.Join(errs, ", ")))
+		} else {
+			validNamespaces = append(validNamespaces, ns)
+		}
+	}
+
+	return validNamespaces
+}
+
+func buildNamespacesCacheOptions(namespacesList []string) map[string]cache.Config {
+	if len(namespacesList) == 0 {
+		return nil
+	}
+
+	namespacesConfig := map[string]cache.Config{}
+	for _, ns := range namespacesList {
+		namespacesConfig[ns] = cache.Config{}
+	}
+
+	return namespacesConfig
+}
+
+// getWatchNamespacesFromEnv retrieves the WATCH_NAMESPACES environment variable.
+// Note: Despite its singular name, the variable can contain a single namespace
+// or a comma-separated list of namespaces.
+// Returns an empty string if running with cluster scope.
+// Returns an error if the environment variable is not set.
+func getWatchNamespacesFromEnv() (string, error) {
+	var watchNamespaceEnvVar = "WATCH_NAMESPACES"
+	ns, found := os.LookupEnv(watchNamespaceEnvVar)
+	if !found {
+		return "", fmt.Errorf("%s must be set", watchNamespaceEnvVar)
+	}
+	return ns, nil
 }

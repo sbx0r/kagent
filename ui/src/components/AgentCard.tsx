@@ -33,14 +33,17 @@ export function AgentCard({ id, agentResponse: { agent, model, provider } }: Age
             <Button variant="ghost" size="icon" onClick={handleEditClick} aria-label="Edit Agent">
               <Pencil className="h-4 w-4" />
             </Button>
-            <DeleteButton teamLabel={String(agent.metadata.name)} />
+            <DeleteButton teamLabel={String(agent.metadata.name)} namespace={String(agent.metadata.namespace)} />
           </div>
         </CardHeader>
         <CardContent className="flex flex-col justify-between h-32">
           <p className="text-sm text-muted-foreground line-clamp-3 overflow-hidden">{agent.spec.description}</p>
-          <div className="mt-4 flex items-center text-xs text-muted-foreground">
+          <div className="mt-4 flex justify-between items-center text-xs text-muted-foreground">
             <span>
               {provider} ({model})
+            </span>
+            <span>
+              {agent.metadata.namespace}
             </span>
           </div>
         </CardContent>

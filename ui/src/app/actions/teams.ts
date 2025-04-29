@@ -35,7 +35,7 @@ function convertToolRepresentation(tool: unknown, allAgents: AgentResponse[]): T
   }
 
   // Check if it's a Component<ToolConfig>
-  if (tool && typeof tool === 'object' && 'provider' in tool) {
+  if (tool && typeof tool === "object" && "provider" in tool) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const componentTool = tool as Component<any>;
     return {
@@ -79,11 +79,15 @@ function extractToolsFromResponse(data: AgentResponse, allAgents: AgentResponse[
  * @param config The config object to process
  * @returns A new object with all values as strings
  */
-function processConfigObject(config: Record<string, unknown>): Record<string, string> {
+function processConfigObject(
+  config: Record<string, unknown>
+): Record<string, string> {
   return Object.entries(config).reduce((acc, [key, value]) => {
     // If value is an object and not null, process it recursively
     if (typeof value === "object" && value !== null) {
-      acc[key] = JSON.stringify(processConfigObject(value as Record<string, unknown>));
+      acc[key] = JSON.stringify(
+        processConfigObject(value as Record<string, unknown>)
+      );
     } else {
       // For primitive values, convert to string
       acc[key] = String(value);
@@ -101,6 +105,7 @@ function fromAgentFormDataToAgent(agentFormData: AgentFormData): Agent {
   return {
     metadata: {
       name: agentFormData.name,
+      namespace: agentFormData.namespace,
     },
     spec: {
       description: agentFormData.description,
@@ -118,7 +123,7 @@ function fromAgentFormDataToAgent(agentFormData: AgentFormData): Agent {
             },
           } as Tool;
         }
-        
+
         if (isMcpTool(tool) && tool.mcpServer) {
           return {
             type: "McpServer",
@@ -137,7 +142,7 @@ function fromAgentFormDataToAgent(agentFormData: AgentFormData): Agent {
             },
           } as Tool;
         }
-        
+
         // Default case - shouldn't happen with proper type checking
         console.warn("Unknown tool type:", tool);
         return tool;
@@ -151,7 +156,9 @@ function fromAgentFormDataToAgent(agentFormData: AgentFormData): Agent {
  * @param teamLabel The team label or ID
  * @returns A promise with the team data
  */
-export async function getTeam(teamLabel: string | number): Promise<BaseResponse<AgentResponse>> {
+export async function getTeam(
+  teamLabel: string | number
+): Promise<BaseResponse<AgentResponse>> {
   try {
     const teamData = await fetchApi<AgentResponse>(`/teams/${teamLabel}`);
 
@@ -184,9 +191,12 @@ export async function getTeam(teamLabel: string | number): Promise<BaseResponse<
  * @param teamLabel The team label
  * @returns A promise with the delete result
  */
-export async function deleteTeam(teamLabel: string): Promise<BaseResponse<void>> {
+export async function deleteTeam(
+  teamLabel: string,
+  namespace: string
+): Promise<BaseResponse<void>> {
   try {
-    await fetchApi(`/teams/${teamLabel}`, {
+    await fetchApi(`/teams/${namespace}/${teamLabel}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -206,7 +216,10 @@ export async function deleteTeam(teamLabel: string): Promise<BaseResponse<void>>
  * @param update Whether to update an existing agent
  * @returns A promise with the created/updated agent
  */
-export async function createAgent(agentConfig: AgentFormData, update: boolean = false): Promise<BaseResponse<Agent>> {
+export async function createAgent(
+  agentConfig: AgentFormData,
+  update: boolean = false
+): Promise<BaseResponse<Agent>> {
   try {
     const agentSpec = fromAgentFormDataToAgent(agentConfig);
     const response = await fetchApi<Agent>(`/teams`, {
@@ -235,7 +248,6 @@ export async function createAgent(agentConfig: AgentFormData, update: boolean = 
 export async function getTeams(): Promise<BaseResponse<AgentResponse[]>> {
   try {
     const data = await fetchApi<AgentResponse[]>(`/teams`);
-    
     const validTeams = data.filter(team => !!team.agent);
     const agentMap = new Map(validTeams.map(agentResp => [agentResp.agent.metadata.name, agentResp]));
 
@@ -270,10 +282,10 @@ export async function getTeams(): Promise<BaseResponse<AgentResponse[]>> {
       };
     });
 
-    const sortedData = convertedData.sort((a, b) => 
+    const sortedData = convertedData.sort((a, b) =>
       a.agent.metadata.name.localeCompare(b.agent.metadata.name)
     );
-    
+
     return { success: true, data: sortedData };
   } catch (error) {
     return createErrorResponse<AgentResponse[]>(error, "Error getting teams");

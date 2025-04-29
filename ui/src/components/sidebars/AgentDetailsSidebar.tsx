@@ -180,7 +180,17 @@ export function AgentDetailsSidebar({ selectedAgentId }: AgentDetailsSidebarProp
           <ScrollArea>
             <SidebarGroup>
               <SidebarGroupLabel className="font-bold">
-                {selectedTeam?.agent.metadata.name} ({selectedTeam?.model})
+                {selectedTeam?.agent.metadata.name} 
+                {selectedTeam?.agent.metadata.namespace && (
+                  <span className="text-muted-foreground ml-1">
+                    ({selectedTeam.agent.metadata.namespace})
+                  </span>
+                )}
+                {selectedTeam?.model && (
+                  <span className="text-sm ml-2">
+                    {selectedTeam.model}
+                  </span>
+                )}
               </SidebarGroupLabel>
               <p className="text-sm flex px-2 text-muted-foreground">{selectedTeam?.agent.spec.description}</p>
             </SidebarGroup>

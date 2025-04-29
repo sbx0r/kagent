@@ -20,6 +20,7 @@ import { toast } from "sonner";
 
 interface ValidationErrors {
   name?: string;
+  namespace?: string;
   description?: string;
   systemPrompt?: string;
   model?: string;
@@ -39,6 +40,7 @@ function AgentPageContent() {
 
   // Basic form state
   const [name, setName] = useState("");
+  const [namespace, setNamespace] = useState("");
   const [description, setDescription] = useState("");
   const [systemPrompt, setSystemPrompt] = useState("");
 
@@ -78,6 +80,7 @@ function AgentPageContent() {
             try {
               // Populate form with existing agent data
               setName(agent.metadata.name || "");
+              setNamespace(agent.metadata.namespace || "");
               setDescription(agent.spec.description || "");
               setSystemPrompt(agent.spec.systemMessage || "");
               setSelectedTools(agent.spec.tools || []);
@@ -125,6 +128,7 @@ function AgentPageContent() {
     
     // Set only the field being validated
     if (fieldName === 'name') formData.name = value;
+    else if (fieldName === 'namespace') formData.namespace = value;
     else if (fieldName === 'description') formData.description = value;
     else if (fieldName === 'systemPrompt') formData.systemPrompt = value;
     else if (fieldName === 'model') formData.model = value;
@@ -152,6 +156,7 @@ function AgentPageContent() {
 
       const agentData = {
         name,
+        namespace,
         systemPrompt,
         description,
         model: selectedModel,
@@ -209,6 +214,19 @@ function AgentPageContent() {
                     onBlur={() => validateField('name', name)}
                     className={`${errors.name ? "border-red-500" : ""}`}
                     placeholder="Enter agent name..."
+                    disabled={isSubmitting || isLoading}
+                  />
+                  {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+                </div>
+
+                <div>
+                  <label className="text-sm mb-2 block">Agent Namespace</label>
+                  <Input
+                    value={namespace}
+                    onChange={(e) => setNamespace(e.target.value)}
+                    onBlur={() => validateField('namespace', namespace)}
+                    className={`${errors.namespace ? "border-red-500" : ""}`}
+                    placeholder="Enter agent namespace..."
                     disabled={isSubmitting || isLoading}
                   />
                   {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
