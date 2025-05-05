@@ -214,6 +214,8 @@ func (a *apiTranslator) translateGroupChatForAgent(
 			APIVersion: "kagent.dev/v1alpha1",
 		},
 		Spec: v1alpha1.TeamSpec{
+			// TODO(multi-namespace): this should be:
+			// ParticipantsRef    []Participant
 			Participants:         []string{agent.Name},
 			Description:          agent.Spec.Description,
 			ModelConfig:          modelConfig.Name,
@@ -281,6 +283,7 @@ func (a *apiTranslator) translateGroupChatForTeam(
 
 	for _, agentName := range team.Spec.Participants {
 		agent := &v1alpha1.Agent{}
+		// TODO(multi-namespace): kagent BLOCKER (fetches agents from team namespace)
 		err := fetchObjKube(
 			ctx,
 			a.kube,
@@ -517,11 +520,12 @@ func (a *apiTranslator) translateAssistantAgent(
 			// Translate a nested tool
 			toolAgent := v1alpha1.Agent{}
 
+			// TODO(multi-namespace): kagent BLOCKER (will fail if tool agent is from different namespace)
 			err := fetchObjKube(
 				ctx,
 				a.kube,
 				&toolAgent,
-				tool.Agent.Ref,
+				tool.Agent.Ref,  // example (non-release-ns/agent-name)
 				agent.Namespace,
 			)
 			if err != nil {

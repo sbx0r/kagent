@@ -26,6 +26,8 @@ const (
 
 // TeamSpec defines the desired state of Team.
 type TeamSpec struct {
+	// TODO(multi-namespace): this should be:
+	// ParticipantsRef []Participant
 	Participants []string `json:"participants"`
 	Description  string   `json:"description"`
 	ModelConfig  string   `json:"modelConfig"`
