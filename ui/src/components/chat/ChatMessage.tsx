@@ -6,6 +6,11 @@ import ToolCallDisplay from "@/components/chat/ToolCallDisplay";
 import MemoryQueryDisplay from "./MemoryQueryDisplay";
 import KagentLogo from "../kagent-logo";
 
+function convertToUserFriendlyName(name: string): string {
+  name = name.replace(/__NS__/g, "/");
+  return name.replace(/_/g, "-");
+}
+
 interface ChatMessageProps {
   message: AgentMessageConfig;
   allMessages: AgentMessageConfig[];
@@ -28,7 +33,7 @@ export default function ChatMessage({ message, allMessages }: ChatMessageProps) 
   const { content, source } = message;
 
   // Filter out system messages
-  // TODO: Decide whether we want to filter out som agent
+  // TODO: Decide whether we want to filter out some agent
   if (source === "system" || source === "user_proxy" || (typeof source === "string" && source.endsWith("society_of_mind_agent"))) {
     return null;
   }
