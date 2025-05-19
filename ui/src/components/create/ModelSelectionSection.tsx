@@ -14,9 +14,9 @@ export const ModelSelectionSection = ({ allModels, selectedModel, setSelectedMod
   return (
     <>
       <label className="text-sm mb-2 block">Model</label>
-      <Select 
-        value={selectedModel ? `${selectedModel.namespace}/${selectedModel.name}` : ""} 
-        disabled={isSubmitting || allModels.length === 0} 
+      <Select
+        value={selectedModel ? `${selectedModel.namespace}/${selectedModel.name}` : ""}
+        disabled={isSubmitting || allModels.length === 0}
         onValueChange={(value) => {
           const [namespace, name] = value.split('/');
           const model = allModels.find((m) => m.namespace === namespace && m.name === name);
@@ -33,7 +33,7 @@ export const ModelSelectionSection = ({ allModels, selectedModel, setSelectedMod
         </SelectTrigger>
         <SelectContent>
           {allModels.map((model, idx) => (
-            <SelectItem key={`${idx}_${model.name}`} value={`${model.namespace}/${model.name}`}>
+            <SelectItem key={`${idx}_${model.namespace}_${model.name}`} value={`${model.namespace}/${model.name}`}>
               {model.model} ({model.namespace}/{model.name})
             </SelectItem>
           ))}
