@@ -2,7 +2,6 @@ package client
 
 import (
 	"fmt"
-	"log"
 )
 
 func (c *client) ListTeams(userID string) ([]*Team, error) {
@@ -24,7 +23,6 @@ func (c *client) GetTeamByID(teamID int, userID string) (*Team, error) {
 func (c *client) GetTeam(teamLabel string, userID string) (*Team, error) {
 	allTeams, err := c.ListTeams(userID)
 	if err != nil {
-		log.Printf("GetTeam: error listing teams: %v", err)
 		return nil, err
 	}
 
@@ -34,7 +32,6 @@ func (c *client) GetTeam(teamLabel string, userID string) (*Team, error) {
 		}
 	}
 
-	log.Printf("GetTeam: no team found with label '%s' for user '%s'", teamLabel, userID)
 	return nil, nil
 }
 
