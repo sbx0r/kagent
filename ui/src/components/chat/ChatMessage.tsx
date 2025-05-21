@@ -60,6 +60,7 @@ export default function ChatMessage({ message, allMessages }: ChatMessageProps) 
     return <MemoryQueryDisplay currentMessage={message} />
   }
 
+
   if (messageUtils.isLlmCallEvent(message)) {
     return <LLMCallModal content={String(message)} />;
   }
@@ -112,4 +113,5 @@ export default function ChatMessage({ message, allMessages }: ChatMessageProps) 
       />
     )}
   </div>
+
 }
