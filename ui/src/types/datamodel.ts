@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export type ComponentType = | "team" | "agent" | "model" | "tool" | "termination" | "chat_completion_context" | "tool_server";
+export type ComponentType = "team" | "agent" | "model" | "tool" | "termination" | "chat_completion_context" | "tool_server";
 
 export interface Component<T extends ComponentConfig> {
   provider: string;
@@ -34,7 +34,7 @@ export interface FunctionExecutionResult {
   content: string;
 }
 
-export interface ToolCallExecutionEvent extends BaseMessageConfig {
+export interface ToolCallExecutionEvent extends BaseMessageConfig { 
   content: Array<{
     content: string;
     name: string;
@@ -98,7 +98,7 @@ export interface ModelClientStreamingChunkEvent extends BaseAgentEvent {
   type: "ModelClientStreamingChunkEvent";
 }
 
-export type AgentMessageConfig = | TextMessageConfig | MultiModalMessageConfig | StopMessageConfig | HandoffMessageConfig | ToolCallRequestEvent | ToolCallExecutionEvent | ToolCallSummaryMessage | MemoryQueryEvent | ModelClientStreamingChunkEvent;
+export type AgentMessageConfig = TextMessageConfig | MultiModalMessageConfig | StopMessageConfig | HandoffMessageConfig | ToolCallRequestEvent | ToolCallExecutionEvent | ToolCallSummaryMessage | MemoryQueryEvent | ModelClientStreamingChunkEvent;
 
 // Tool Configs
 export interface FunctionToolConfig {
@@ -269,9 +269,9 @@ export interface TextMessageTerminationConfig {
 }
 
 // Config type unions based on provider
-export type TeamConfig = | SelectorGroupChatConfig | RoundRobinGroupChatConfig | TaskAgentConfig;
+export type TeamConfig = SelectorGroupChatConfig | RoundRobinGroupChatConfig | TaskAgentConfig;
 
-export type AgentConfig = | MultimodalWebSurferConfig | AssistantAgentConfig | UserProxyAgentConfig | TaskAgentConfig;
+export type AgentConfig = MultimodalWebSurferConfig | AssistantAgentConfig | UserProxyAgentConfig | TaskAgentConfig;
 
 export type ModelConfig = OpenAIClientConfig | AzureOpenAIClientConfig;
 
@@ -281,9 +281,9 @@ export type ToolServerConfig = StdioMcpServerConfig | SseMcpServerConfig;
 
 export type ChatCompletionContextConfig = UnboundedChatCompletionContextConfig;
 
-export type TerminationConfig = | OrTerminationConfig | MaxMessageTerminationConfig | TextMentionTerminationConfig | TextMessageTerminationConfig;
+export type TerminationConfig = OrTerminationConfig | MaxMessageTerminationConfig | TextMentionTerminationConfig | TextMessageTerminationConfig;
 
-export type ComponentConfig = | TeamConfig | AgentConfig | ModelConfig | ToolConfig | TerminationConfig | ChatCompletionContextConfig | ToolServerConfig;
+export type ComponentConfig = TeamConfig | AgentConfig | ModelConfig | ToolConfig | TerminationConfig | ChatCompletionContextConfig | ToolServerConfig;
 
 // DB Models
 export interface DBModel {
@@ -350,6 +350,7 @@ export interface TaskResultMessage {
   usage: string;
   duration: number;
 }
+
 
 export interface ResourceMetadata {
   name: string;

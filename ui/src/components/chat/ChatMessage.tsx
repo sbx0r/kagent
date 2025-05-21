@@ -46,9 +46,11 @@ export default function ChatMessage({ message, allMessages }: ChatMessageProps) 
     return <MemoryQueryDisplay currentMessage={message} />
   }
 
+
   if (messageUtils.isLlmCallEvent(message)) {
     return <LLMCallModal content={String(message)} />;
   }
+
 
   return <div className={`flex items-center gap-2 text-sm border-l-2 py-2 px-4 ${displaySource === "user" ? "border-l-blue-500" : "border-l-violet-500"}`}>
     <div className="flex flex-col gap-1 w-full">
@@ -59,4 +61,5 @@ export default function ChatMessage({ message, allMessages }: ChatMessageProps) 
       <TruncatableText content={String(content)} className="break-all text-primary-foreground" />
     </div>
   </div>
+
 }
