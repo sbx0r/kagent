@@ -210,7 +210,7 @@ func main() {
 
 	getCmd.AddCommand(getSessionCmd, getRunCmd, getAgentCmd, getToolCmd)
 
-	rootCmd.AddCommand(installCmd, uninstallCmd, invokeCmd, bugReportCmd, versionCmd, dashboardCmd, getCmd)
+	rootCmd.AddCommand(installCmd, uninstallCmd, invokeCmd, bugReportCmd, versionCmd, dashboardCmd, getCmd, a2aCmd)
 
 	// Initialize config
 	if err := config.Init(); err != nil {

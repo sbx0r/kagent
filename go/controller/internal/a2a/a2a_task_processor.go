@@ -44,7 +44,6 @@ func (a *a2aTaskProcessor) ProcessMessage(
 	}
 
 	// Extract text from the incoming message.
-	taskID := message.TaskID
 	text := a2autils.ExtractText(message)
 	if text == "" {
 		err := fmt.Errorf("input message must contain text")
@@ -57,7 +56,7 @@ func (a *a2aTaskProcessor) ProcessMessage(
 		}, nil
 	}
 
-	processorLog.Info("Processing task", "taskID", taskID, "text", text)
+	processorLog.Info("Processing task", "taskID", message.TaskID, "text", text)
 
 	// Process the input text (in this simple example, we'll just reverse it).
 	sessionID := handle.GetContextID()

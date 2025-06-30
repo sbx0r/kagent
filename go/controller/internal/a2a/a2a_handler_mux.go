@@ -2,7 +2,6 @@ package a2a
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 	"sync"
@@ -63,8 +62,6 @@ func (a *handlerMux) SetAgentHandler(
 	a.lock.Lock()
 	defer a.lock.Unlock()
 
-	log.Printf("Setting agent handler for %s", agentRef)
-
 	a.handlers[agentRef] = srv.Handler()
 
 	return nil
@@ -112,9 +109,6 @@ func (a *handlerMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
-
-	// update the request URL to the remaining path
-	r.URL.Path = "/" + remainingPath
 
 	handlerHandler.ServeHTTP(w, r)
 }

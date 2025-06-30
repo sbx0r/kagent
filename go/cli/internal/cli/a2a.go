@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/kagent-dev/kagent/go/cli/internal/config"
-	"k8s.io/utils/ptr"
 	"trpc.group/trpc-go/trpc-a2a-go/client"
 	"trpc.group/trpc-go/trpc-a2a-go/protocol"
 )
@@ -41,7 +40,7 @@ func A2ARun(ctx context.Context, cfg *A2ACfg) {
 	fmt.Fprintln(os.Stderr, "Task completed successfully:")
 	var text string
 	for _, part := range msg.Parts {
-		if textPart, ok := part.(protocol.TextPart); ok {
+		if textPart, ok := part.(*protocol.TextPart); ok {
 			text += textPart.Text
 		}
 	}
@@ -62,7 +61,6 @@ func startPortForward(ctx context.Context) func() {
 	// Ensure the context is cancelled when the shell is closed
 	return func() {
 		cancel()
-		// cmd.Wait()
 		if err := a2aPortFwdCmd.Wait(); err != nil {
 			// These 2 errors are expected
 			if !strings.Contains(err.Error(), "signal: killed") && !strings.Contains(err.Error(), "exec: not started") {
@@ -94,9 +92,6 @@ func runTask(
 			Role:      protocol.MessageRoleUser,
 			ContextID: sessionID,
 			Parts:     []protocol.Part{protocol.NewTextPart(userPrompt)},
-		},
-		Configuration: &protocol.SendMessageConfiguration{
-			Blocking: ptr.To(true),
 		},
 	})
 	if err != nil {
