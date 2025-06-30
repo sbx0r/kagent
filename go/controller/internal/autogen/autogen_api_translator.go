@@ -21,16 +21,6 @@ import (
 )
 
 var (
-	// hard-coded array of tools that require a model client
-	// this is automatically populated from the parent agent's model client
-	toolsProvidersRequiringModelClient = []string{
-		"kagent.tools.prometheus.GeneratePromQLTool",
-		"kagent.tools.k8s.GenerateResourceTool",
-	}
-	toolsProvidersRequiringOpenaiApiKey = []string{
-		"kagent.tools.docs.QueryTool",
-	}
-
 	log = ctrllog.Log.WithName("autogen")
 )
 
@@ -170,7 +160,7 @@ func (a *apiTranslator) translateToolServerConfig(ctx context.Context, config v1
 			Command:            config.Stdio.Command,
 			Args:               config.Stdio.Args,
 			Env:                env,
-			ReadTimeoutSeconds: 10,
+			ReadTimeoutSeconds: 30,
 		}, nil
 	case config.Sse != nil:
 		headers, err := convertMapFromAnytype(config.Sse.Headers)
@@ -533,6 +523,7 @@ func (a *apiTranslator) translateAssistantAgent(
 
 	tools := []*api.Component{}
 	for _, tool := range agent.Spec.Tools {
+		// Skip tools that are not applicable to the model provider
 		switch {
 		case tool.Builtin != nil:
 			autogenTool, err := a.translateBuiltinTool(
@@ -711,25 +702,6 @@ func (a *apiTranslator) translateBuiltinTool(
 	toolConfig, err := convertMapFromAnytype(tool.Config)
 	if err != nil {
 		return nil, err
-	}
-	// special case where we put the model client in the tool config
-	if toolNeedsModelClient(tool.Name) {
-		if err := addModelClientToConfig(modelClient, &toolConfig); err != nil {
-			return nil, fmt.Errorf("failed to add model client to tool config: %v", err)
-		}
-	}
-	if toolNeedsOpenaiApiKey(tool.Name) {
-		if (modelConfig.Spec.Provider != v1alpha1.OpenAI) && modelConfig.Spec.Provider != v1alpha1.AzureOpenAI {
-			return nil, fmt.Errorf("tool %s requires OpenAI API key, but model config is not OpenAI", tool.Name)
-		}
-		apiKey, err := a.getModelConfigApiKey(ctx, modelConfig)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get model config api key: %v", err)
-		}
-
-		if err := addOpenaiApiKeyToConfig(apiKey, &toolConfig); err != nil {
-			return nil, fmt.Errorf("failed to add openai api key to tool config: %v", err)
-		}
 	}
 
 	providerParts := strings.Split(tool.Name, ".")
@@ -913,14 +885,6 @@ func translateTerminationCondition(terminationCondition v1alpha1.TerminationCond
 	}
 
 	return nil, fmt.Errorf("unsupported termination condition")
-}
-
-func toolNeedsModelClient(provider string) bool {
-	return slices.Contains(toolsProvidersRequiringModelClient, provider)
-}
-
-func toolNeedsOpenaiApiKey(provider string) bool {
-	return slices.Contains(toolsProvidersRequiringOpenaiApiKey, provider)
 }
 
 func addModelClientToConfig(
