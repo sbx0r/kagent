@@ -2,10 +2,12 @@ package a2a
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 	"sync"
 
+	common "github.com/kagent-dev/kagent/go/controller/internal/utils"
 	"trpc.group/trpc-go/trpc-a2a-go/server"
 	"trpc.group/trpc-go/trpc-a2a-go/taskmanager"
 )
@@ -61,6 +63,8 @@ func (a *handlerMux) SetAgentHandler(
 	a.lock.Lock()
 	defer a.lock.Unlock()
 
+	log.Printf("Setting agent handler for %s", agentRef)
+
 	a.handlers[agentRef] = srv.Handler()
 
 	return nil
@@ -96,8 +100,10 @@ func (a *handlerMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	handlerName := common.ResourceRefString(agentNamespace, agentName)
+
 	// get the underlying handler
-	handlerHandler, ok := a.getHandler(agentName)
+	handlerHandler, ok := a.getHandler(handlerName)
 	if !ok {
 		http.Error(
 			w,
