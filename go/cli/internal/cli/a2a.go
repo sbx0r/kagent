@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/kagent-dev/kagent/go/cli/internal/config"
-	"github.com/kagent-dev/kagent/go/internal"
+	"k8s.io/utils/ptr"
 	"trpc.group/trpc-go/trpc-a2a-go/client"
 	"trpc.group/trpc-go/trpc-a2a-go/protocol"
 )
@@ -96,7 +96,7 @@ func runTask(
 			Parts:     []protocol.Part{protocol.NewTextPart(userPrompt)},
 		},
 		Configuration: &protocol.SendMessageConfiguration{
-			Blocking: internal.MakePtr(true),
+			Blocking: ptr.To(true),
 		},
 	})
 	if err != nil {

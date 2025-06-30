@@ -13,8 +13,8 @@ import (
 	"github.com/kagent-dev/kagent/go/controller/api/v1alpha1"
 	"github.com/kagent-dev/kagent/go/controller/internal/a2a"
 	common "github.com/kagent-dev/kagent/go/controller/internal/utils"
-	"github.com/kagent-dev/kagent/go/internal"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/utils/ptr"
 )
 
 // Helper function to create a mock autogen team with proper Component
@@ -65,7 +65,7 @@ func TestTranslateHandlerForAgent(t *testing.T) {
 						{
 							ID:          "skill1",
 							Name:        "Test Skill",
-							Description: internal.MakePtr("A test skill"),
+							Description: ptr.To("A test skill"),
 						},
 					},
 				},
