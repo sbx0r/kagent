@@ -89,7 +89,6 @@ jobs:
           cd go
           go test -v -run ^TestInvokeAPI$ github.com/kagent-dev/kagent/go/test/e2e
 
-
   go-unit-tests:
     if: ${{ github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
