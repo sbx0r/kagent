@@ -165,3 +165,4 @@ To generate a consolidated YAML file for installation:
 make build-installer
 # The installer will be available at dist/install.yaml
 ```
+
