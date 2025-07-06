@@ -1,4 +1,3 @@
-{{- if .Values.enabled }}
 apiVersion: kagent.dev/v1alpha1
 kind: ToolServer
 metadata:
@@ -13,4 +12,3 @@ spec:
       timeout: 30s
       url: {{ include "querydoc.serverUrl" . }}
   description: "Documentation Query Tool Server"
-{{- end }}
