@@ -218,8 +218,8 @@ external-mcp:
       limits:
         cpu: 500m
         memory: 512Mi
-    config:
-      openaiApiKey: ""
+    openai:
+      apiKey: ""
   grafana-mcp:
     enabled: false
     image:
@@ -234,9 +234,9 @@ external-mcp:
       limits:
         cpu: 500m
         memory: 512Mi
-    config:
-      grafanaUrl: "http://grafana.kagent.svc.cluster.local:3000"
-      grafanaApiKey: ""
+    connection:
+      url: "http://grafana.kagent.svc.cluster.local:3000"
+      apiKey: ""
 
 # ==============================================================================
 # OBSERVABILITY

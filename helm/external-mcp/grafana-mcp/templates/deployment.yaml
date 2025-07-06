@@ -13,10 +13,10 @@ spec:
   template:
     metadata:
       annotations:
+        {{- if .Values.config }}
         checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-        {{- if .Values.grafana.apiKey }}
-        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         {{- end }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
       labels:
         {{- include "grafana-mcp.selectorLabels" . | nindent 8 }}
     spec:
@@ -33,16 +33,12 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           envFrom:
+            {{- if .Values.config }}
             - configMapRef:
                 name: {{ include "grafana-mcp.fullname" . }}
-            {{- if .Values.grafana.apiKey }}
-            - secretRef:
-                name: {{ .Values.grafana.apiKeySecretRef }}
             {{- end }}
-          {{- if .Values.env }}
-          env:
-            {{- toYaml .Values.env | nindent 12 }}
-          {{- end }}
+            - secretRef:
+                name: {{ include "grafana-mcp.fullname" . }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port | default 8000 }}

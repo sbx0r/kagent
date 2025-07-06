@@ -26,17 +26,10 @@ logLevel: info
 
 # MCP server configuration
 config:
-  openaiApiKey: ""
+
 # Secret configuration  
 openai:
-  apiKeySecretRef: querydoc
-  apiKeySecretKey: OPENAI_API_KEY
-
-# Custom environment variables
-env: []
-
-# Additional environment variables
-additionalEnv: []
+  apiKey: ""
 
 # OTEL configuration
 otel:
