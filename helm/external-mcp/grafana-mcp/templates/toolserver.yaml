@@ -1,4 +1,3 @@
-{{- if .Values.enabled -}}
 apiVersion: kagent.dev/v1alpha1
 kind: ToolServer
 metadata:
@@ -13,4 +12,3 @@ spec:
       timeout: 5s
       sseReadTimeout: 5m0s
   description: "Grafana MCP server for monitoring and dashboard management"
-{{- end }}

@@ -1,5 +1,3 @@
-enabled: false
-
 replicaCount: 1
 
 image:
@@ -31,14 +29,14 @@ config:
   openaiApiKey: ""
 # Secret configuration  
 openai:
-  apiKeySecretRef: querydoc-openai
+  apiKeySecretRef: querydoc
   apiKeySecretKey: OPENAI_API_KEY
 
 # Custom environment variables
 env: []
 
-# Custom configuration for ConfigMap
-config: {}
+# Additional environment variables
+additionalEnv: []
 
 # OTEL configuration
 otel:
