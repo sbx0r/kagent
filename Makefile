@@ -239,6 +239,7 @@ helm-version: helm-cleanup helm-agents
 	VERSION=$(VERSION) envsubst < helm/kagent/charts/tool-server/Chart-template.yaml > helm/kagent/charts/tool-server/Chart.yaml
 	VERSION=$(VERSION) envsubst < helm/external-mcp/querydoc/Chart-template.yaml > helm/external-mcp/querydoc/Chart.yaml
 	VERSION=$(VERSION) envsubst < helm/external-mcp/grafana-mcp/Chart-template.yaml > helm/external-mcp/grafana-mcp/Chart.yaml
+	VERSION=$(VERSION) envsubst < helm/external-mcp/github-mcp-server/Chart-template.yaml > helm/external-mcp/github-mcp-server/Chart.yaml
 	VERSION=$(VERSION) envsubst < helm/kagent/Chart-template.yaml > helm/kagent/Chart.yaml
 	helm dependency update helm/kagent
 	helm package -d $(HELM_DIST_FOLDER) helm/kagent-crds
@@ -271,9 +272,12 @@ helm-install-provider: helm-version check-openai-key
 		--set providers.azureOpenAI.apiKey=$(AZUREOPENAI_API_KEY) \
 		--set providers.anthropic.apiKey=$(ANTHROPIC_API_KEY) \
 		--set providers.default=$(KAGENT_DEFAULT_MODEL_PROVIDER) \
-		--set external-mcp.querydoc.config.openaiApiKey=$(OPENAI_API_KEY) \
+		--set querydoc.config.openaiApiKey=$(OPENAI_API_KEY) \
 		--set tool-server.openai.apiKey=$(OPENAI_API_KEY) \
-		$(if $(GRAFANA_API_KEY),--set external-mcp.grafana-mcp.config.grafanaApiKey=$(GRAFANA_API_KEY),) \
+		$(if $(GRAFANA_API_KEY),--set external-mcp.grafana-mcp.enabled=true,) \
+		$(if $(GRAFANA_API_KEY),--set grafana-mcp.config.grafanaApiKey=$(GRAFANA_API_KEY),) \
+		$(if $(GITHUB_PERSONAL_ACCESS_TOKEN),--set external-mcp.github-mcp-server.enabled=true,) \
+		$(if $(GITHUB_PERSONAL_ACCESS_TOKEN),--set github-mcp-server.github.personalAccessToken=$(GITHUB_PERSONAL_ACCESS_TOKEN),) \
 		$(KAGENT_HELM_EXTRA_ARGS)
 
 .PHONY: helm-install
