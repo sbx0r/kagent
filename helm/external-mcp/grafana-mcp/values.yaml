@@ -23,9 +23,10 @@ service:
 
 resources: {}
 
-# Grafana connection configuration
-grafana:
+# MCP server configuration
+config:
+
+# Grafana connection secrets
+connection:
   url: ""
   apiKey: ""
-  apiKeySecretRef: grafana-mcp-secret
-  apiKeySecretKey: GRAFANA_API_KEY

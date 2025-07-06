@@ -1,3 +1,4 @@
+{{- if .Values.config }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,4 +7,7 @@ metadata:
   labels:
     {{- include "grafana-mcp.labels" . | nindent 4 }}
 data:
-  GRAFANA_URL: {{ .Values.grafana.url | quote }}
+  {{- range $key, $value := .Values.config }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
