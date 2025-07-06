@@ -239,7 +239,6 @@ helm-version: helm-cleanup helm-agents
 	VERSION=$(VERSION) envsubst < helm/kagent/charts/tool-server/Chart-template.yaml > helm/kagent/charts/tool-server/Chart.yaml
 	VERSION=$(VERSION) envsubst < helm/external-mcp/querydoc/Chart-template.yaml > helm/external-mcp/querydoc/Chart.yaml
 	VERSION=$(VERSION) envsubst < helm/external-mcp/grafana-mcp/Chart-template.yaml > helm/external-mcp/grafana-mcp/Chart.yaml
-	VERSION=$(VERSION) envsubst < helm/external-mcp/github-mcp-server/Chart-template.yaml > helm/external-mcp/github-mcp-server/Chart.yaml
 	VERSION=$(VERSION) envsubst < helm/kagent/Chart-template.yaml > helm/kagent/Chart.yaml
 	helm dependency update helm/kagent
 	helm package -d $(HELM_DIST_FOLDER) helm/kagent-crds
@@ -262,11 +261,11 @@ helm-install-provider: helm-version check-openai-key
 		--kube-context kind-$(KIND_CLUSTER_NAME) \
 		--wait \
 		--set ui.service.type=LoadBalancer \
-		--set controller.image.registry=$(RETAGGED_DOCKER_REGISTRY) \
 		--set ui.image.registry=$(RETAGGED_DOCKER_REGISTRY) \
-		--set engine.image.registry=$(RETAGGED_DOCKER_REGISTRY) \
-		--set controller.image.tag=$(CONTROLLER_IMAGE_TAG) \
 		--set ui.image.tag=$(UI_IMAGE_TAG) \
+		--set controller.image.registry=$(RETAGGED_DOCKER_REGISTRY) \
+		--set controller.image.tag=$(CONTROLLER_IMAGE_TAG) \
+		--set engine.image.registry=$(RETAGGED_DOCKER_REGISTRY) \
 		--set engine.image.tag=$(APP_IMAGE_TAG) \
 		--set providers.openAI.apiKey=$(OPENAI_API_KEY) \
 		--set providers.azureOpenAI.apiKey=$(AZUREOPENAI_API_KEY) \
@@ -276,8 +275,6 @@ helm-install-provider: helm-version check-openai-key
 		--set tool-server.openai.apiKey=$(OPENAI_API_KEY) \
 		$(if $(GRAFANA_API_KEY),--set external-mcp.grafana-mcp.enabled=true,) \
 		$(if $(GRAFANA_API_KEY),--set grafana-mcp.config.grafanaApiKey=$(GRAFANA_API_KEY),) \
-		$(if $(GITHUB_PERSONAL_ACCESS_TOKEN),--set external-mcp.github-mcp-server.enabled=true,) \
-		$(if $(GITHUB_PERSONAL_ACCESS_TOKEN),--set github-mcp-server.github.personalAccessToken=$(GITHUB_PERSONAL_ACCESS_TOKEN),) \
 		$(KAGENT_HELM_EXTRA_ARGS)
 
 .PHONY: helm-install
