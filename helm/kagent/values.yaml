@@ -167,6 +167,11 @@ tool-server:
     limits:
       cpu: 1000m
       memory: 512Mi
+  config:
+    prometheus:
+      url: "prometheus.kagent.svc.cluster.local:9090"
+      username: ""
+      password: ""
 
 # ==============================================================================
 # AGENTS
@@ -216,7 +221,7 @@ external-mcp:
     config:
       openaiApiKey: ""
   grafana-mcp:
-    enabled: true
+    enabled: false
     image:
       registry: docker.io
       repository: mcp/grafana

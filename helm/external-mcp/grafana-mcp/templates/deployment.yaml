@@ -1,4 +1,3 @@
-{{- if .Values.enabled -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -48,4 +47,3 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port | default 8000 }}
               protocol: TCP
-{{- end }}
