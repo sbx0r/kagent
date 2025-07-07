@@ -1,0 +1,64 @@
+apiVersion: kagent.dev/v1alpha1
+kind: ToolServer
+metadata:
+  name: {{ include "mcp-server-lib.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "mcp-server-lib.labels" . | nindent 4 }}
+spec:
+  description: {{ .Values.description | quote }}
+  config:
+    {{- if include "mcp-server-lib.isSSE" . }}
+    sse:
+      url: {{ include "mcp-server-lib.serverUrl" . }}
+      {{- if .Values.http.headers }}
+      headers:
+        {{- toYaml .Values.http.headers | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.config .Values.secrets.stringData .Values.http.headersFrom }}
+      headersFrom:
+        {{- include "mcp-server-lib.headersFrom" . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.http.timeout }}
+      timeout: {{ .Values.http.timeout }}
+      {{- end }}
+      {{- if .Values.http.sseReadTimeout }}
+      sseReadTimeout: {{ .Values.http.sseReadTimeout }}
+      {{- end }}
+    {{- else if include "mcp-server-lib.isStreamableHttp" . }}
+    streamableHttp:
+      url: {{ include "mcp-server-lib.serverUrl" . }}
+      {{- if .Values.http.headers }}
+      headers:
+        {{- toYaml .Values.http.headers | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.config .Values.secrets.stringData .Values.http.headersFrom }}
+      headersFrom:
+        {{- include "mcp-server-lib.headersFrom" . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.http.timeout }}
+      timeout: {{ .Values.http.timeout }}
+      {{- end }}
+      {{- if .Values.http.sseReadTimeout }}
+      sseReadTimeout: {{ .Values.http.sseReadTimeout }}
+      {{- end }}
+      {{- if .Values.http.terminateOnClose }}
+      terminateOnClose: {{ .Values.http.terminateOnClose }}
+      {{- end }}
+    {{- else if include "mcp-server-lib.isStdio" . }}
+    stdio:
+      command: {{ .Values.stdio.command | quote }}
+      {{- if .Values.args }}
+      args:
+        {{- range .Values.args }}
+        - {{ . | quote }}
+        {{- end }}
+      {{- end }}
+      {{- if or .Values.config .Values.secrets.stringData .Values.stdio.envFrom }}
+      envFrom:
+        {{- include "mcp-server-lib.envFrom" . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.stdio.readTimeoutSeconds }}
+      readTimeoutSeconds: {{ .Values.stdio.readTimeoutSeconds }}
+      {{- end }}
+    {{- end }}
