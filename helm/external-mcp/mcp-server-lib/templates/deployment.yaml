@@ -1,50 +1,56 @@
+{{- if include "mcp-server-lib.needsDeployment" . }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "tools.fullname" . }}
+  name: {{ include "mcp-server-lib.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "tools.labels" . | nindent 4 }}
+    {{- include "mcp-server-lib.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount | default 1 }}
   selector:
     matchLabels:
-      {{- include "tools.selectorLabels" . | nindent 6 }}
+      {{- include "mcp-server-lib.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       annotations:
+        {{- if .Values.config }}
         checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-        {{- if .Values.openai.apiKey }}
+        {{- end }}
+        {{- if .Values.secrets }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         {{- end }}
       labels:
-        {{- include "tools.selectorLabels" . | nindent 8 }}
+        {{- include "mcp-server-lib.selectorLabels" . | nindent 8 }}
     spec:
-      serviceAccountName: {{ include "tools.serviceAccountName" . }}
+      serviceAccountName: {{ include "mcp-server-lib.serviceAccountName" . }}
       containers:
-        - name: tools
-          command:
-            - /tool-server
+        - name: {{ include "mcp-server-lib.containerName" . }}
+          {{- if .Values.args }}
           args:
-            - "--port"
-            - "{{ .Values.service.port | default 8080 }}"
+            {{- range .Values.args }}
+            - {{ . | quote }}
+            {{- end }}
+          {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.Version }}"
           imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- if or .Values.config .Values.secrets }}
           envFrom:
+            {{- if .Values.config }}
             - configMapRef:
-                name: {{ include "tools.fullname" . }}
+                name: {{ include "mcp-server-lib.fullname" . }}
+            {{- end }}
+            {{- if .Values.secrets }}
             - secretRef:
-                name: {{ .Values.openai.apiKeySecretRef }}
+                name: {{ include "mcp-server-lib.fullname" . }}
+            {{- end }}
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port | default 8080 }}
               protocol: TCP
-          readinessProbe:
-            tcpSocket:
-              port: http
-            initialDelaySeconds: 15
-            periodSeconds: 15
+{{- end }}
