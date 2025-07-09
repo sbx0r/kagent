@@ -3,6 +3,8 @@ tests:
   - it: should create readwrite toolserver when readwrite is enabled
     template: templates/toolserver.yaml
     set:
+      tokenSecretRef.name: "test-token"
+      tokenSecretRef.key: "token"
       tools.repositories.readwrite: true
     asserts:
       - hasDocuments:
@@ -17,7 +19,7 @@ tests:
           value: https://api.githubcopilot.com/mcp/x/repos
       - equal:
           path: spec.config.streamableHttp.headersFrom[0].valueFrom.valueRef
-          value: github-mcp-server-token
+          value: test-token
       - matchRegex:
           path: spec.description
           pattern: ".*GitHub Repository related tools \\(read-write\\).*"
@@ -25,6 +27,8 @@ tests:
   - it: should create readwrite toolserver for pullRequests with correct URL
     template: templates/toolserver.yaml
     set:
+      tokenSecretRef.name: "test-token"
+      tokenSecretRef.key: "token"
       tools.pullRequests.readwrite: true
     asserts:
       - hasDocuments:
@@ -39,6 +43,8 @@ tests:
   - it: should create readwrite toolserver for codeSecurity with correct URL
     template: templates/toolserver.yaml
     set:
+      tokenSecretRef.name: "test-token"
+      tokenSecretRef.key: "token"
       tools.codeSecurity.readwrite: true
     asserts:
       - hasDocuments:
@@ -53,6 +59,8 @@ tests:
   - it: should create readwrite toolserver for all tools
     template: templates/toolserver.yaml
     set:
+      tokenSecretRef.name: "test-token"
+      tokenSecretRef.key: "token"
       tools.all.readwrite: true
     asserts:
       - hasDocuments:

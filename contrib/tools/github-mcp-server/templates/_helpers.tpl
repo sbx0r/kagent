@@ -87,6 +87,21 @@ Generate the description for a given toolset
 
 {{/*
 Get the token secret name for a toolset
+
+Algorithm (precedence order):
+1. If toolset has tokenSecretRef:
+   - Use toolset.tokenSecretRef.name
+   - If not provided - throw an error
+2. Else if toolset has tokenSecret:
+   - Use toolset.tokenSecret.name if provided
+   - Else if toolset has tokenSecret.value: auto-generate "{resourceName}-token"
+   - Else throw an error (empty tokenSecret block)
+3. Else if global tokenSecretRef.name exists:
+   - Use global.tokenSecretRef.name
+4. Else if global.tokenSecret.name exists:
+   - Use global.tokenSecret.name
+5. Else (final):
+   - There is no name specified for the secret to be used - throw an error!
 */}}
 {{- define "github-mcp-server.tokenSecretName" -}}
 {{- $config := .config -}}
@@ -97,7 +112,7 @@ Get the token secret name for a toolset
 {{- if $config.tokenSecretRef.name -}}
 {{- $config.tokenSecretRef.name -}}
 {{- else -}}
-{{- $global.name | default (printf "%s-token" .context.Release.Name) -}}
+{{- fail (printf "toolset '%s' has tokenSecretRef but no name specified. Please provide tokenSecretRef.name" $toolset) -}}
 {{- end -}}
 {{- else if $config.tokenSecret -}}
 {{- if $config.tokenSecret.name -}}
@@ -105,12 +120,14 @@ Get the token secret name for a toolset
 {{- else if $config.tokenSecret.value -}}
 {{- printf "%s-token" (include "github-mcp-server.resourceName" (dict "toolset" $toolset "readonly" false "context" .context)) -}}
 {{- else -}}
-{{- $global.name | default (printf "%s-token" .context.Release.Name) -}}
+{{- fail (printf "toolset '%s' has empty tokenSecret block. Please provide tokenSecret.name or tokenSecret.value" $toolset) -}}
 {{- end -}}
 {{- else if $globalRef.name -}}
 {{- $globalRef.name -}}
+{{- else if $global.name -}}
+{{- $global.name -}}
 {{- else -}}
-{{- $global.name | default (printf "%s-token" .context.Release.Name) -}}
+{{- fail "No secret name specified. Please provide either global tokenSecret.name or tokenSecretRef.name" -}}
 {{- end -}}
 {{- end }}
 
@@ -121,9 +138,9 @@ Validate that a token is available for a toolset
 {{- $config := .config -}}
 {{- $global := .context.Values.tokenSecret -}}
 {{- $globalRef := .context.Values.tokenSecretRef -}}
-{{- $hasToken := or $config.tokenSecretRef.name $config.tokenSecret.value $globalRef.name $global.value -}}
+{{- $hasToken := or (and $config.tokenSecretRef.name $config.tokenSecretRef.key) $config.tokenSecret.value (and $globalRef.name $globalRef.key) $global.value -}}
 {{- if not $hasToken -}}
-{{- fail (printf "No token configured for toolset '%s'. Please provide tokenSecret.value or tokenSecretRef.name either globally or per toolset." .toolset) -}}
+{{- fail (printf "No token configured for toolset '%s'. Please provide tokenSecret.value or tokenSecretRef.name+key either globally or per toolset." .toolset) -}}
 {{- end -}}
 {{- end }}
 

@@ -50,6 +50,8 @@ tests:
     template: templates/toolserver.yaml
     set:
       baseUrl: ""
+      tokenSecretRef.name: "test-token"
+      tokenSecretRef.key: "token"
       tools.repositories.readwrite: true
     asserts:
       - hasDocuments:

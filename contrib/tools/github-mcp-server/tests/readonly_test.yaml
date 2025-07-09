@@ -3,6 +3,8 @@ tests:
   - it: should create readonly toolserver when readonly is enabled
     template: templates/toolserver.yaml
     set:
+      tokenSecretRef.name: "test-token"
+      tokenSecretRef.key: "token"
       tools.repositories.readonly: true
     asserts:
       - hasDocuments:
@@ -22,6 +24,8 @@ tests:
   - it: should create both readonly and readwrite toolservers
     template: templates/toolserver.yaml
     set:
+      tokenSecretRef.name: "test-token"
+      tokenSecretRef.key: "token"
       tools.repositories.readonly: true
       tools.repositories.readwrite: true
     asserts:

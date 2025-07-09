@@ -18,9 +18,10 @@ tokenSecret: {}
 
 # -- Reference existing token secret globally (alternative to tokenSecret)
 # If specified, this takes precedence over tokenSecret for all toolsets
+# Both name and key are required when using tokenSecretRef
 tokenSecretRef: {}
-  # name: "existing-global-secret"  # Name of existing secret
-  # key: "github-token"             # Key within the secret
+  # name: "existing-global-secret"  # Name of existing secret (required)
+  # key: "github-token"             # Key within the secret (required)
 
 # -- HTTP timeout for requests
 timeout: "30s"
@@ -49,9 +50,10 @@ tools:
       # key: "token"                # Optional: custom key, defaults to global key
       # value: "ghp_..."            # Token value
     # -- Reference existing token secret (optional)
+    # Both name and key are required when using tokenSecretRef
     tokenSecretRef: {}
-      # name: "existing-secret"     # Name of existing secret
-      # key: "token"                # Key within the secret
+      # name: "existing-secret"     # Name of existing secret (required)
+      # key: "token"                # Key within the secret (required)
 
   # GitHub Actions workflows and CI/CD operations
   actions:
@@ -71,9 +73,10 @@ tools:
       # key: "token"                # Optional: custom key, defaults to global key
       # value: "ghp_..."            # Token value (Bearer prefix added automatically)
     # -- Reference existing token secret (optional)
+    # Both name and key are required when using tokenSecretRef
     tokenSecretRef: {}
-      # name: "existing-secret"     # Name of existing secret
-      # key: "token"                # Key within the secret
+      # name: "existing-secret"     # Name of existing secret (required)
+      # key: "token"                # Key within the secret (required)
 
   # Code security related tools
   codeSecurity:
@@ -93,9 +96,10 @@ tools:
       # key: "token"                # Optional: custom key, defaults to global key
       # value: "ghp_..."            # Token value (Bearer prefix added automatically)
     # -- Reference existing token secret (optional)
+    # Both name and key are required when using tokenSecretRef
     tokenSecretRef: {}
-      # name: "existing-secret"     # Name of existing secret
-      # key: "token"                # Key within the secret
+      # name: "existing-secret"     # Name of existing secret (required)
+      # key: "token"                # Key within the secret (required)
 
   # Dependabot tools
   dependabot:
@@ -115,9 +119,10 @@ tools:
       # key: "token"                # Optional: custom key, defaults to global key
       # value: "ghp_..."            # Token value (Bearer prefix added automatically)
     # -- Reference existing token secret (optional)
+    # Both name and key are required when using tokenSecretRef
     tokenSecretRef: {}
-      # name: "existing-secret"     # Name of existing secret
-      # key: "token"                # Key within the secret
+      # name: "existing-secret"     # Name of existing secret (required)
+      # key: "token"                # Key within the secret (required)
 
   # GitHub Discussions related tools
   discussions:
@@ -137,9 +142,10 @@ tools:
       # key: "token"                # Optional: custom key, defaults to global key
       # value: "ghp_..."            # Token value (Bearer prefix added automatically)
     # -- Reference existing token secret (optional)
+    # Both name and key are required when using tokenSecretRef
     tokenSecretRef: {}
-      # name: "existing-secret"     # Name of existing secret
-      # key: "token"                # Key within the secret
+      # name: "existing-secret"     # Name of existing secret (required)
+      # key: "token"                # Key within the secret (required)
 
   # Experimental features
   experiments:
@@ -159,9 +165,10 @@ tools:
       # key: "token"                # Optional: custom key, defaults to global key
       # value: "ghp_..."            # Token value (Bearer prefix added automatically)
     # -- Reference existing token secret (optional)
+    # Both name and key are required when using tokenSecretRef
     tokenSecretRef: {}
-      # name: "existing-secret"     # Name of existing secret
-      # key: "token"                # Key within the secret
+      # name: "existing-secret"     # Name of existing secret (required)
+      # key: "token"                # Key within the secret (required)
 
   # GitHub Issues related tools
   issues:
@@ -181,9 +188,10 @@ tools:
       # key: "token"                # Optional: custom key, defaults to global key
       # value: "ghp_..."            # Token value (Bearer prefix added automatically)
     # -- Reference existing token secret (optional)
+    # Both name and key are required when using tokenSecretRef
     tokenSecretRef: {}
-      # name: "existing-secret"     # Name of existing secret
-      # key: "token"                # Key within the secret
+      # name: "existing-secret"     # Name of existing secret (required)
+      # key: "token"                # Key within the secret (required)
 
   # GitHub Notifications related tools
   notifications:
@@ -203,9 +211,10 @@ tools:
       # key: "token"                # Optional: custom key, defaults to global key
       # value: "ghp_..."            # Token value (Bearer prefix added automatically)
     # -- Reference existing token secret (optional)
+    # Both name and key are required when using tokenSecretRef
     tokenSecretRef: {}
-      # name: "existing-secret"     # Name of existing secret
-      # key: "token"                # Key within the secret
+      # name: "existing-secret"     # Name of existing secret (required)
+      # key: "token"                # Key within the secret (required)
 
   # GitHub Organization related tools
   organizations:
@@ -225,9 +234,10 @@ tools:
       # key: "token"                # Optional: custom key, defaults to global key
       # value: "ghp_..."            # Token value (Bearer prefix added automatically)
     # -- Reference existing token secret (optional)
+    # Both name and key are required when using tokenSecretRef
     tokenSecretRef: {}
-      # name: "existing-secret"     # Name of existing secret
-      # key: "token"                # Key within the secret
+      # name: "existing-secret"     # Name of existing secret (required)
+      # key: "token"                # Key within the secret (required)
 
   # GitHub Pull Request related tools
   pullRequests:
@@ -247,9 +257,10 @@ tools:
       # key: "token"                # Optional: custom key, defaults to global key
       # value: "ghp_..."            # Token value (Bearer prefix added automatically)
     # -- Reference existing token secret (optional)
+    # Both name and key are required when using tokenSecretRef
     tokenSecretRef: {}
-      # name: "existing-secret"     # Name of existing secret
-      # key: "token"                # Key within the secret
+      # name: "existing-secret"     # Name of existing secret (required)
+      # key: "token"                # Key within the secret (required)
 
   # GitHub Repository related tools
   repositories:
@@ -269,9 +280,10 @@ tools:
       # key: "token"                # Optional: custom key, defaults to global key
       # value: "ghp_..."            # Token value (Bearer prefix added automatically)
     # -- Reference existing token secret (optional)
+    # Both name and key are required when using tokenSecretRef
     tokenSecretRef: {}
-      # name: "existing-secret"     # Name of existing secret
-      # key: "token"                # Key within the secret
+      # name: "existing-secret"     # Name of existing secret (required)
+      # key: "token"                # Key within the secret (required)
 
   # Secret protection related tools
   secretProtection:
@@ -291,9 +303,10 @@ tools:
       # key: "token"                # Optional: custom key, defaults to global key
       # value: "ghp_..."            # Token value (Bearer prefix added automatically)
     # -- Reference existing token secret (optional)
+    # Both name and key are required when using tokenSecretRef
     tokenSecretRef: {}
-      # name: "existing-secret"     # Name of existing secret
-      # key: "token"                # Key within the secret
+      # name: "existing-secret"     # Name of existing secret (required)
+      # key: "token"                # Key within the secret (required)
 
   # GitHub User related tools
   users:
@@ -313,9 +326,10 @@ tools:
       # key: "token"                # Optional: custom key, defaults to global key
       # value: "ghp_..."            # Token value (Bearer prefix added automatically)
     # -- Reference existing token secret (optional)
+    # Both name and key are required when using tokenSecretRef
     tokenSecretRef: {}
-      # name: "existing-secret"     # Name of existing secret
-      # key: "token"                # Key within the secret
+      # name: "existing-secret"     # Name of existing secret (required)
+      # key: "token"                # Key within the secret (required)
 
 # Example configurations:
 #

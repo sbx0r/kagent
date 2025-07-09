@@ -3,6 +3,8 @@ tests:
   - it: should create multiple toolservers for different toolsets
     template: templates/toolserver.yaml
     set:
+      tokenSecretRef.name: "test-token"
+      tokenSecretRef.key: "token"
       tools.repositories.readwrite: true
       tools.issues.readonly: true
       tools.pullRequests.readwrite: true
@@ -17,6 +19,8 @@ tests:
     template: templates/toolserver.yaml
     set:
       baseUrl: "https://custom.api.com/mcp"
+      tokenSecretRef.name: "test-token"
+      tokenSecretRef.key: "token"
       tools.repositories.readwrite: true
       tools.repositories.timeout: "60s"
       tools.issues.readonly: true
