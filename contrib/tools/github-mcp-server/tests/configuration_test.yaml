@@ -58,4 +58,4 @@ tests:
           count: 1
       - matchRegex:
           path: spec.description
-          pattern: "Official Remote GitHub MCP Server - GitHub Repository related tools \\(read-write\\)"
+          pattern: "Official GitHub MCP Remote Server - GitHub Repository related tools \\(read-write\\)"

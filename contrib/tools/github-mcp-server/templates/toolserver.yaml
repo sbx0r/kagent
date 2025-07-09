@@ -1,5 +1,6 @@
 {{- range $toolset, $config := .Values.tools }}
 {{- if or $config.readwrite $config.readonly }}
+{{- include "github-mcp-server.validateToken" (dict "config" $config "toolset" $toolset "context" $) }}
 {{- if $config.readwrite }}
 ---
 apiVersion: kagent.dev/v1alpha1

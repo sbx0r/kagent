@@ -68,24 +68,9 @@ Generate the URL for a given toolset
 Generate the resource name for a given toolset
 */}}
 {{- define "github-mcp-server.resourceName" -}}
-{{- $toolset := .toolset -}}
-{{- $readonly := .readonly -}}
 {{- $baseName := include "github-mcp-server.fullname" .context -}}
-{{- $suffix := "" -}}
-{{- if eq $toolset "all" -}}
-{{- $suffix = "all" -}}
-{{- else -}}
-{{- if eq $toolset "pullRequests" -}}
-{{- $suffix = "pull-requests" -}}
-{{- else if eq $toolset "codeSecurity" -}}
-{{- $suffix = "code-security" -}}
-{{- else if eq $toolset "secretProtection" -}}
-{{- $suffix = "secret-protection" -}}
-{{- else -}}
-{{- $suffix = $toolset | lower -}}
-{{- end -}}
-{{- end -}}
-{{- if $readonly -}}
+{{- $suffix := include "github-mcp-server.toolsetKebab" .toolset -}}
+{{- if .readonly -}}
 {{- $suffix = printf "%s-readonly" $suffix -}}
 {{- end -}}
 {{- printf "%s-%s" $baseName $suffix | trunc 63 | trimSuffix "-" -}}
@@ -95,49 +80,9 @@ Generate the resource name for a given toolset
 Generate the description for a given toolset
 */}}
 {{- define "github-mcp-server.description" -}}
-{{- $toolset := .toolset -}}
-{{- $readonly := .readonly -}}
 {{- $config := .config -}}
-{{- $descriptionPrefix := .context.Values.descriptionPrefix -}}
-{{- if $config.description -}}
-{{- $config.description -}}
-{{- else -}}
-{{- $toolsetName := "" -}}
-{{- if eq $toolset "all" -}}
-{{- $toolsetName = "all available tools" -}}
-{{- else if eq $toolset "actions" -}}
-{{- $toolsetName = "GitHub Actions workflows and CI/CD operations" -}}
-{{- else if eq $toolset "codeSecurity" -}}
-{{- $toolsetName = "code security related tools" -}}
-{{- else if eq $toolset "dependabot" -}}
-{{- $toolsetName = "Dependabot tools" -}}
-{{- else if eq $toolset "discussions" -}}
-{{- $toolsetName = "GitHub Discussions related tools" -}}
-{{- else if eq $toolset "experiments" -}}
-{{- $toolsetName = "experimental features" -}}
-{{- else if eq $toolset "issues" -}}
-{{- $toolsetName = "GitHub Issues related tools" -}}
-{{- else if eq $toolset "notifications" -}}
-{{- $toolsetName = "GitHub Notifications related tools" -}}
-{{- else if eq $toolset "organizations" -}}
-{{- $toolsetName = "GitHub Organization related tools" -}}
-{{- else if eq $toolset "pullRequests" -}}
-{{- $toolsetName = "GitHub Pull Request related tools" -}}
-{{- else if eq $toolset "repositories" -}}
-{{- $toolsetName = "GitHub Repository related tools" -}}
-{{- else if eq $toolset "secretProtection" -}}
-{{- $toolsetName = "secret protection related tools" -}}
-{{- else if eq $toolset "users" -}}
-{{- $toolsetName = "GitHub User related tools" -}}
-{{- else -}}
-{{- $toolsetName = printf "%s tools" $toolset -}}
-{{- end -}}
-{{- $mode := "read-write" -}}
-{{- if $readonly -}}
-{{- $mode = "read-only" -}}
-{{- end -}}
-{{- printf "%s - %s (%s)" $descriptionPrefix $toolsetName $mode -}}
-{{- end -}}
+{{- $mode := ternary "read-only" "read-write" .readonly -}}
+{{- printf "%s - %s (%s)" .context.Values.descriptionPrefix $config.description $mode -}}
 {{- end }}
 
 {{/*
@@ -152,7 +97,7 @@ Get the token secret name for a toolset
 {{- if $config.tokenSecretRef.name -}}
 {{- $config.tokenSecretRef.name -}}
 {{- else -}}
-{{- $global.name -}}
+{{- $global.name | default (printf "%s-token" .context.Release.Name) -}}
 {{- end -}}
 {{- else if $config.tokenSecret -}}
 {{- if $config.tokenSecret.name -}}
@@ -160,12 +105,25 @@ Get the token secret name for a toolset
 {{- else if $config.tokenSecret.value -}}
 {{- printf "%s-token" (include "github-mcp-server.resourceName" (dict "toolset" $toolset "readonly" false "context" .context)) -}}
 {{- else -}}
-{{- $global.name -}}
+{{- $global.name | default (printf "%s-token" .context.Release.Name) -}}
 {{- end -}}
 {{- else if $globalRef.name -}}
 {{- $globalRef.name -}}
 {{- else -}}
-{{- $global.name -}}
+{{- $global.name | default (printf "%s-token" .context.Release.Name) -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Validate that a token is available for a toolset
+*/}}
+{{- define "github-mcp-server.validateToken" -}}
+{{- $config := .config -}}
+{{- $global := .context.Values.tokenSecret -}}
+{{- $globalRef := .context.Values.tokenSecretRef -}}
+{{- $hasToken := or $config.tokenSecretRef.name $config.tokenSecret.value $globalRef.name $global.value -}}
+{{- if not $hasToken -}}
+{{- fail (printf "No token configured for toolset '%s'. Please provide tokenSecret.value or tokenSecretRef.name either globally or per toolset." .toolset) -}}
 {{- end -}}
 {{- end }}
 
@@ -176,23 +134,7 @@ Get the token secret key for a toolset
 {{- $config := .config -}}
 {{- $global := .context.Values.tokenSecret -}}
 {{- $globalRef := .context.Values.tokenSecretRef -}}
-{{- if $config.tokenSecretRef -}}
-{{- if $config.tokenSecretRef.key -}}
-{{- $config.tokenSecretRef.key -}}
-{{- else -}}
-{{- $global.key -}}
-{{- end -}}
-{{- else if $config.tokenSecret -}}
-{{- if $config.tokenSecret.key -}}
-{{- $config.tokenSecret.key -}}
-{{- else -}}
-{{- $global.key -}}
-{{- end -}}
-{{- else if $globalRef.key -}}
-{{- $globalRef.key -}}
-{{- else -}}
-{{- $global.key -}}
-{{- end -}}
+{{- coalesce $config.tokenSecretRef.key $config.tokenSecret.key $globalRef.key $global.key "token" -}}
 {{- end }}
 
 {{/*
@@ -215,15 +157,31 @@ Convert camelCase toolset names to URL path format
 {{- $toolset := . -}}
 {{- if eq $toolset "codeSecurity" -}}
 code_security
-{{- else if eq $toolset "pullRequests" -}}
-pull_requests
-{{- else if eq $toolset "secretProtection" -}}
-secret_protection
 {{- else if eq $toolset "organizations" -}}
 orgs
+{{- else if eq $toolset "pullRequests" -}}
+pull_requests
 {{- else if eq $toolset "repositories" -}}
 repos
+{{- else if eq $toolset "secretProtection" -}}
+secret_protection
 {{- else -}}
 {{ $toolset }}
+{{- end -}}
+{{- end }}
+
+{{/*
+Convert camelCase toolset names to kebab-case for resource names
+*/}}
+{{- define "github-mcp-server.toolsetKebab" -}}
+{{- $toolset := . -}}
+{{- if eq $toolset "codeSecurity" -}}
+code-security
+{{- else if eq $toolset "pullRequests" -}}
+pull-requests
+{{- else if eq $toolset "secretProtection" -}}
+secret-protection
+{{- else -}}
+{{ $toolset | lower }}
 {{- end -}}
 {{- end }}
