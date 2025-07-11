@@ -1,0 +1,8 @@
+apiVersion: v2
+name: grafana-mcp
+description: Grafana MCP server for kagent
+type: application
+version: v0.3.19-23-g0ad43ab
+sources:
+  - https://hub.docker.com/r/mcp/grafana
+  - https://github.com/grafana/mcp-grafana

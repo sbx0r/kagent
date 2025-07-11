@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "tools.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount | default 1 }}
+  replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
       {{- include "tools.selectorLabels" . | nindent 6 }}
@@ -38,7 +38,7 @@ spec:
             - configMapRef:
                 name: {{ include "tools.fullname" . }}
             - secretRef:
-                name: {{ .Values.openai.apiKeySecretRef }}
+                name: {{ .Release.Name }}-api-key
           ports:
             - name: http
               containerPort: {{ .Values.service.port | default 8080 }}

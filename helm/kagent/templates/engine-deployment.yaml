@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "kagent.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.engine.replicaCount | default .Values.replicaCount }}
+  replicas: {{ .Values.engine.replicas }}
   selector:
     matchLabels:
       {{- include "kagent.engine.selectorLabels" . | nindent 6 }}

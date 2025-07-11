@@ -1,17 +1,16 @@
-replicaCount: 1
+replicas: 1
 
 image:
   registry: ghcr.io
   repository: kagent-dev/kagent-tools
   pullPolicy: IfNotPresent
-  tag: ""
+  tag: "v0.0.7"
 
 nameOverride: ""
 fullnameOverride: ""
 
 serviceAccount:
   create: true
-  automount: true
   annotations: {}
   name: ""
 
@@ -26,7 +25,6 @@ resources: {}
 # OpenAI API configuration
 openai:
   apiKey: ""
-  apiKeySecretRef: tool-server-openai
   apiKeySecretKey: OPENAI_API_KEY
 
 # Custom environment variables
