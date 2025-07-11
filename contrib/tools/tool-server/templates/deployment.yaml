@@ -27,21 +27,21 @@ spec:
             - /tool-server
           args:
             - "--port"
-            - "{{ .Values.service.port | default 8080 }}"
+            - "{{ .Values.service.port }}"
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           envFrom:
             - configMapRef:
                 name: {{ include "tools.fullname" . }}
             - secretRef:
-                name: {{ .Release.Name }}-api-key
+                name: {{ include "tools.fullname" . }}-api-key
           ports:
             - name: http
-              containerPort: {{ .Values.service.port | default 8080 }}
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
           readinessProbe:
             tcpSocket:

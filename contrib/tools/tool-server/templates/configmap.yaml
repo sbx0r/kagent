@@ -7,10 +7,10 @@ metadata:
     {{- include "tools.labels" . | nindent 4 }}
 data:
   KAGENT_NAMESPACE: {{ .Release.Namespace | quote }}
-  OTEL_TRACING_ENABLED: {{ .Values.otel.tracing.enabled | default "false" | quote }}
-  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.otel.tracing.exporter.otlp.endpoint | default "" | quote }}
-  OTEL_EXPORTER_OTLP_TRACES_TIMEOUT: {{ .Values.otel.tracing.exporter.otlp.timeout | default "10000" | quote }}
-  OTEL_EXPORTER_OTLP_TRACES_INSECURE: {{ .Values.otel.tracing.exporter.otlp.insecure | default "true" | quote }}
+  OTEL_TRACING_ENABLED: {{ .Values.otel.tracing.enabled | quote }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.otel.tracing.exporter.otlp.endpoint | quote }}
+  OTEL_EXPORTER_OTLP_TRACES_TIMEOUT: {{ .Values.otel.tracing.exporter.otlp.timeout | quote }}
+  OTEL_EXPORTER_OTLP_TRACES_INSECURE: {{ .Values.otel.tracing.exporter.otlp.insecure | quote }}
   {{- range $key, $value := .Values.config }}
   {{ $key }}: {{ $value | quote }}
   {{- end }}
