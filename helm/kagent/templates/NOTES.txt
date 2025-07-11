@@ -2,8 +2,8 @@
 #
 #  This is a Helm chart for Kagent, a Kubernetes agent.
 #
-#  1. Forward application port by running these commands in the terminal:
-#  kubectl -n {{ include "kagent.namespace" . }} port-forward service/{{ .Release.Name }} 8001:80
+#  1. Forward UI port by running these commands in the terminal:
+#  kubectl -n {{ include "kagent.namespace" . }} port-forward service/{{ .Release.Name }}-ui 8001:80
 #
 #  2. Then visit http://127.0.0.1:8001 to use the application.
 #
