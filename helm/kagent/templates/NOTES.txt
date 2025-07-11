@@ -6,7 +6,7 @@ Kagent has been successfully deployed to namespace: {{ include "kagent.namespace
 
 ACCESSING THE UI:
   1. Forward the UI service port:
-     kubectl -n {{ include "kagent.namespace" . }} port-forward service/{{ include "kagent.fullname" . }}-ui {{ .Values.ui.service.ports.port }}:{{ .Values.ui.service.ports.port }}
+     kubectl -n {{ include "kagent.namespace" . }} port-forward service/{{ include "kagent.fullname" . }}-ui 8080:{{ .Values.ui.service.ports.port }}
 
   2. Open your browser and visit:
      http://localhost:{{ .Values.ui.service.ports.port }}
@@ -17,23 +17,23 @@ ACCESSING THE CONTROLLER API:
   API endpoint: http://localhost:{{ .Values.controller.service.ports.port }}/api
 
 DEPLOYED COMPONENTS:
-  • Controller: {{ include "kagent.fullname" . }} (manages Kubernetes resources)
-  • Engine: {{ include "kagent.fullname" . }}-engine (AI agent runtime)
-  • UI: {{ include "kagent.fullname" . }}-ui (web interface)
-{{- if .Values["tool-server"].enabled }}
-  • Tool Server: Built-in Kubernetes tools
+  - Controller: {{ include "kagent.fullname" . }} (manages Kubernetes resources)
+  - Engine: {{ include "kagent.fullname" . }}-engine (AI agent runtime)
+  - UI: {{ include "kagent.fullname" . }}-ui (web interface)
+{{- if index .Values "tool-server" "enabled" }}
+  - Tool Server: Kagent's Built-in tools
 {{- end }}
-{{- if .Values["external-mcp"].querydoc.enabled }}
-  • QueryDoc: Document search and analysis
+{{- if index .Values "external-mcp" "querydoc" "enabled" }}
+  - QueryDoc: Document search and analysis
 {{- end }}
-{{- if .Values["external-mcp"]["grafana-mcp"].enabled }}
-  • Grafana MCP: Grafana integration
+{{- if index .Values "external-mcp" "mcp-grafana" "enabled" }}
+  - Grafana MCP: Grafana integration
 {{- end }}
 
 ENABLED AGENTS:
 {{- range $agent, $config := .Values.agents }}
 {{- if $config.enabled }}
-  • {{ $agent }}
+  - {{ $agent }}
 {{- end }}
 {{- end }}
 
@@ -48,9 +48,9 @@ USEFUL COMMANDS:
   kubectl -n {{ include "kagent.namespace" . }} logs -l app.kubernetes.io/name=kagent -f
 
 TROUBLESHOOTING:
-  • Check pod status: kubectl -n {{ include "kagent.namespace" . }} get pods
-  • View events: kubectl -n {{ include "kagent.namespace" . }} get events --sort-by='.lastTimestamp'
-  • Controller logs: kubectl -n {{ include "kagent.namespace" . }} logs -l app.kubernetes.io/component=controller -f
+  - Check pod status: kubectl -n {{ include "kagent.namespace" . }} get pods
+  - View events: kubectl -n {{ include "kagent.namespace" . }} get events --sort-by='.lastTimestamp'
+  - Controller logs: kubectl -n {{ include "kagent.namespace" . }} logs -l app.kubernetes.io/component=controller -f
 
 DOCUMENTATION:
   Visit https://kagent.dev for comprehensive documentation and examples.

@@ -158,23 +158,7 @@ tool-server:
   openai:
     apiKey: ""
   loglevel: "debug"
-  image:
-    registry: ghcr.io
-    repository: kagent-dev/kagent/tools
-    tag: "0.0.7"
-    pullPolicy: IfNotPresent
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 1000m
-      memory: 512Mi
-  config:
-    prometheus:
-      url: "prometheus.kagent.svc.cluster.local:9090"
-      username: ""
-      password: ""
+  config: {}
 
 # ==============================================================================
 # AGENTS
@@ -224,14 +208,12 @@ external-mcp:
         memory: 512Mi
     openai:
       apiKey: ""
-  grafana-mcp:
+  mcp-grafana:
     enabled: false
     replicas: 1
     image:
       registry: docker.io
       repository: mcp/grafana
-      tag: latest
-      pullPolicy: IfNotPresent
     resources:
       requests:
         cpu: 100m

@@ -2,9 +2,9 @@ replicas: 1
 
 image:
   registry: ghcr.io
-  repository: kagent-dev/kagent-tools
+  repository: kagent-dev/kagent/tools
   pullPolicy: IfNotPresent
-  tag: "v0.0.7"
+  tag: ""
 
 nameOverride: ""
 fullnameOverride: ""
