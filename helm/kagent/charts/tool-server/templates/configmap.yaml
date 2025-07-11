@@ -11,3 +11,6 @@ data:
   OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.otel.tracing.exporter.otlp.endpoint | default "" | quote }}
   OTEL_EXPORTER_OTLP_TRACES_TIMEOUT: {{ .Values.otel.tracing.exporter.otlp.timeout | default "10000" | quote }}
   OTEL_EXPORTER_OTLP_TRACES_INSECURE: {{ .Values.otel.tracing.exporter.otlp.insecure | default "true" | quote }}
+  {{- range $key, $value := .Values.config }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}

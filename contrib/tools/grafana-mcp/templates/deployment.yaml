@@ -1,56 +1,45 @@
-{{- if include "mcp-server-lib.needsDeployment" . }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "mcp-server-lib.fullname" . }}
+  name: {{ include "grafana-mcp.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "mcp-server-lib.labels" . | nindent 4 }}
+    {{- include "grafana-mcp.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount | default 1 }}
+  replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
-      {{- include "mcp-server-lib.selectorLabels" . | nindent 6 }}
+      {{- include "grafana-mcp.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       annotations:
         {{- if .Values.config }}
         checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         {{- end }}
-        {{- if .Values.secrets }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
-        {{- end }}
       labels:
-        {{- include "mcp-server-lib.selectorLabels" . | nindent 8 }}
+        {{- include "grafana-mcp.selectorLabels" . | nindent 8 }}
     spec:
-      serviceAccountName: {{ include "mcp-server-lib.serviceAccountName" . }}
+      serviceAccountName: {{ include "grafana-mcp.serviceAccountName" . }}
       containers:
-        - name: {{ include "mcp-server-lib.containerName" . }}
-          {{- if .Values.args }}
+        - name: grafana-mcp
           args:
-            {{- range .Values.args }}
-            - {{ . | quote }}
-            {{- end }}
-          {{- end }}
+            - "-t"
+            - "stdio"
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.Version }}"
           imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if or .Values.config .Values.secrets }}
           envFrom:
             {{- if .Values.config }}
             - configMapRef:
-                name: {{ include "mcp-server-lib.fullname" . }}
+                name: {{ include "grafana-mcp.fullname" . }}
             {{- end }}
-            {{- if .Values.secrets }}
             - secretRef:
-                name: {{ include "mcp-server-lib.fullname" . }}
-            {{- end }}
-          {{- end }}
+                name: {{ include "grafana-mcp.fullname" . }}
           ports:
             - name: http
-              containerPort: {{ .Values.service.port | default 8080 }}
+              containerPort: {{ .Values.service.port | default 8000 }}
               protocol: TCP
-{{- end }}

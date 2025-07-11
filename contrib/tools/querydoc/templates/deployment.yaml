@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "querydoc.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount | default 1 }}
+  replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
       {{- include "querydoc.selectorLabels" . | nindent 6 }}
