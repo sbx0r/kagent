@@ -6,7 +6,6 @@
 
 tag: ""
 
-replicaCount: 1
 
 imagePullSecrets: []
 imagePullPolicy: IfNotPresent
@@ -36,6 +35,7 @@ securityContext: {}
 # ==============================================================================
 
 controller:
+  replicas: 1
   loglevel: "info"
 
   # -- Namespaces the controller should watch.
@@ -71,6 +71,7 @@ controller:
       url: postgres://postgres:kagent@pgsql-postgresql.kagent.svc.cluster.local:5432/postgres
 
 engine:
+  replicas: 1
   image:
     registry: cr.kagent.dev
     repository: kagent-dev/kagent/app
@@ -91,6 +92,7 @@ engine:
   config: {} # Additional configuration key-value pairs for the engine ConfigMap
 
 ui:
+  replicas: 1
   image:
     registry: cr.kagent.dev
     repository: kagent-dev/kagent/ui
@@ -152,6 +154,7 @@ providers:
 
 tool-server:
   enabled: true
+  replicas: 1
   openai:
     apiKey: ""
   loglevel: "debug"
@@ -206,6 +209,7 @@ agents:
 external-mcp:
   querydoc:
     enabled: true
+    replicas: 1
     image:
       registry: ghcr.io
       repository: kagent-dev/doc2vec/mcp
@@ -222,6 +226,7 @@ external-mcp:
       apiKey: ""
   grafana-mcp:
     enabled: false
+    replicas: 1
     image:
       registry: docker.io
       repository: mcp/grafana

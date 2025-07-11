@@ -10,11 +10,11 @@ dependencies:
     condition: tool-server.enabled
   - name: querydoc
     version: ${VERSION}
-    repository: file://../external-mcp/querydoc
+    repository: file://../../contrib/tools/querydoc
     condition: external-mcp.querydoc.enabled
   - name: grafana-mcp
     version: ${VERSION}
-    repository: file://../external-mcp/grafana-mcp
+    repository: file://../../contrib/tools/grafana-mcp
     condition: external-mcp.grafana-mcp.enabled
   - name: k8s-agent
     version: ${VERSION}
