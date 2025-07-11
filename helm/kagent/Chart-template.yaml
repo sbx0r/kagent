@@ -5,17 +5,17 @@ type: application
 version: ${VERSION}
 dependencies:
   - name: tool-server
-    version: ${VERSION}
-    repository: file://charts/tool-server
+    version: v0.1.0
+    repository: file://../../contrib/tools/tool-server
     condition: tool-server.enabled
   - name: querydoc
-    version: ${VERSION}
+    version: v0.1.0
     repository: file://../../contrib/tools/querydoc
     condition: external-mcp.querydoc.enabled
-  - name: grafana-mcp
-    version: ${VERSION}
-    repository: file://../../contrib/tools/grafana-mcp
-    condition: external-mcp.grafana-mcp.enabled
+  - name: mcp-grafana
+    version: v0.1.0
+    repository: file://../../contrib/tools/mcp-grafana
+    condition: external-mcp.mcp-grafana.enabled
   - name: k8s-agent
     version: ${VERSION}
     repository: file://../agents/k8s

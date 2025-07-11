@@ -236,9 +236,6 @@ helm-agents:
 .PHONY: helm-version
 helm-version: helm-cleanup helm-agents
 	VERSION=$(VERSION) envsubst < helm/kagent-crds/Chart-template.yaml > helm/kagent-crds/Chart.yaml
-	VERSION=$(VERSION) envsubst < helm/kagent/charts/tool-server/Chart-template.yaml > helm/kagent/charts/tool-server/Chart.yaml
-	VERSION=$(VERSION) envsubst < helm/external-mcp/querydoc/Chart-template.yaml > helm/external-mcp/querydoc/Chart.yaml
-	VERSION=$(VERSION) envsubst < helm/external-mcp/grafana-mcp/Chart-template.yaml > helm/external-mcp/grafana-mcp/Chart.yaml
 	VERSION=$(VERSION) envsubst < helm/kagent/Chart-template.yaml > helm/kagent/Chart.yaml
 	helm dependency update helm/kagent
 	helm package -d $(HELM_DIST_FOLDER) helm/kagent-crds

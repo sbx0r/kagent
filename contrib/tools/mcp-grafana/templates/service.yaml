@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "grafana-mcp.fullname" . }}
+  name: {{ include "mcp-grafana.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "grafana-mcp.labels" . | nindent 4 }}
+    {{- include "mcp-grafana.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -13,4 +13,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "grafana-mcp.selectorLabels" . | nindent 4 }}
+    {{- include "mcp-grafana.selectorLabels" . | nindent 4 }}
