@@ -7,13 +7,13 @@ metadata:
     {{- include "querydoc.labels" . | nindent 4 }}
 data:
   KAGENT_NAMESPACE: {{ .Release.Namespace | quote }}
-  KAGENT_LOG_LEVEL: {{ .Values.logLevel | default "info" | quote }}
-  PORT: {{ .Values.service.port | default 8080 | quote }}
+  KAGENT_LOG_LEVEL: {{ .Values.logLevel | quote }}
+  PORT: {{ .Values.service.port | quote }}
   TRANSPORT_TYPE: "http"
-  OTEL_TRACING_ENABLED: {{ .Values.otel.tracing.enabled | default "false" | quote }}
-  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.otel.tracing.exporter.otlp.endpoint | default "" | quote }}
-  OTEL_EXPORTER_OTLP_TRACES_TIMEOUT: {{ .Values.otel.tracing.exporter.otlp.timeout | default "10000" | quote }}
-  OTEL_EXPORTER_OTLP_TRACES_INSECURE: {{ .Values.otel.tracing.exporter.otlp.insecure | default "true" | quote }}
+  OTEL_TRACING_ENABLED: {{ .Values.otel.tracing.enabled | quote }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.otel.tracing.exporter.otlp.endpoint | quote }}
+  OTEL_EXPORTER_OTLP_TRACES_TIMEOUT: {{ .Values.otel.tracing.exporter.otlp.timeout | quote }}
+  OTEL_EXPORTER_OTLP_TRACES_INSECURE: {{ .Values.otel.tracing.exporter.otlp.insecure | quote }}
 
   # Custom configuration
   {{- range $key, $value := .Values.config }}

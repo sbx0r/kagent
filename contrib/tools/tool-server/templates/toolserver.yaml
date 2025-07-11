@@ -11,4 +11,4 @@ spec:
       sseReadTimeout: 5m0s
       timeout: 30s
       url: {{ include "tools.serverUrl" . }}
-  description: "Kagent's Built In Tool Server"
+  description: "Kagent's Tool Server"

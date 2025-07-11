@@ -1,6 +1,6 @@
 apiVersion: v2
 name: tool-server
-description: Kagent's builtin tools server
+description: Kagent's Tool Server
 type: application
 version: v0.1.0
 appVersion: 0.0.7
