@@ -72,6 +72,7 @@ controller:
 
 engine:
   replicas: 1
+  loglevel: debug
   image:
     registry: cr.kagent.dev
     repository: kagent-dev/kagent/app
@@ -89,7 +90,8 @@ engine:
     ports:
       port: 8081
       targetPort: 8081
-  config: {} # Additional configuration key-value pairs for the engine ConfigMap
+  config:
+    AUTOGENSTUDIO_CORS_ALLOW_ORIGINS: "*" # just for now
 
 ui:
   replicas: 1
