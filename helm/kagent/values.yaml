@@ -192,40 +192,39 @@ agents:
 # EXTERNAL MCP SERVERS
 # ==============================================================================
 
-external-mcp:
-  querydoc:
-    enabled: true
-    replicas: 1
-    image:
-      registry: ghcr.io
-      repository: kagent-dev/doc2vec/mcp
-      tag: 1.1.8
-    resources:
-      requests:
-        cpu: 100m
-        memory: 128Mi
-      limits:
-        cpu: 500m
-        memory: 512Mi
-    openai:
-      apiKey: ""
-  mcp-grafana:
-    enabled: false
-    replicas: 1
-    image:
-      registry: docker.io
-      repository: mcp/grafana
-      tag: latest
-    resources:
-      requests:
-        cpu: 100m
-        memory: 128Mi
-      limits:
-        cpu: 500m
-        memory: 512Mi
-    connection:
-      url: "http://grafana.kagent.svc.cluster.local:3000"
-      apiKey: ""
+querydoc:
+  enabled: true
+  replicas: 1
+  image:
+    registry: ghcr.io
+    repository: kagent-dev/doc2vec/mcp
+    tag: 1.1.8
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  openai:
+    apiKey: ""
+mcp-grafana:
+  enabled: false
+  replicas: 1
+  image:
+    registry: docker.io
+    repository: mcp/grafana
+    tag: latest
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  connection:
+    url: "http://grafana.kagent.svc.cluster.local:3000"
+    apiKey: ""
 
 # ==============================================================================
 # OBSERVABILITY

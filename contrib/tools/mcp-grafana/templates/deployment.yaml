@@ -26,6 +26,7 @@ spec:
           args:
             - "-t"
             - "streamable-http"
+            - -debug
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -41,5 +42,5 @@ spec:
                 name: {{ include "mcp-grafana.fullname" . }}
           ports:
             - name: http
-              containerPort: {{ .Values.service.port | default 8000 }}
+              containerPort: {{ .Values.service.port }}
               protocol: TCP

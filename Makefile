@@ -270,8 +270,8 @@ helm-install-provider: helm-version check-openai-key
 		--set providers.default=$(KAGENT_DEFAULT_MODEL_PROVIDER) \
 		--set querydoc.config.openaiApiKey=$(OPENAI_API_KEY) \
 		--set tool-server.openai.apiKey=$(OPENAI_API_KEY) \
-		$(if $(GRAFANA_API_KEY),--set external-mcp.grafana-mcp.enabled=true,) \
-		$(if $(GRAFANA_API_KEY),--set grafana-mcp.config.grafanaApiKey=$(GRAFANA_API_KEY),) \
+		$(if $(GRAFANA_API_KEY),--set mcp-grafana.enabled=true,) \
+		$(if $(GRAFANA_API_KEY),--set mcp-grafana.connection.apiKey=$(GRAFANA_API_KEY),) \
 		$(KAGENT_HELM_EXTRA_ARGS)
 
 .PHONY: helm-install

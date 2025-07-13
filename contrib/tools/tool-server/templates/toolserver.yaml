@@ -7,8 +7,7 @@ metadata:
     {{- include "tools.labels" . | nindent 4 }}
 spec:
   config:
-    sse:
-      sseReadTimeout: 5m0s
+    streamableHttp:
       timeout: 30s
       url: {{ include "tools.serverUrl" . }}
   description: "Kagent's Tool Server"
