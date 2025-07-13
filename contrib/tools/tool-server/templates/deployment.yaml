@@ -23,8 +23,6 @@ spec:
       serviceAccountName: {{ include "tools.serviceAccountName" . }}
       containers:
         - name: tools
-          command:
-            - /tool-server
           args:
             - "--port"
             - "{{ .Values.service.port }}"
