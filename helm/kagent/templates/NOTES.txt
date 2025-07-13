@@ -23,10 +23,10 @@ DEPLOYED COMPONENTS:
 {{- if index .Values "tool-server" "enabled" }}
   - Tool Server: Kagent's Built-in tools
 {{- end }}
-{{- if index .Values "external-mcp" "querydoc" "enabled" }}
+{{- if index .Values "querydoc" "enabled" }}
   - QueryDoc: Document search and analysis
 {{- end }}
-{{- if index .Values "external-mcp" "mcp-grafana" "enabled" }}
+{{- if index .Values "mcp-grafana" "enabled" }}
   - Grafana MCP: Grafana integration
 {{- end }}
 

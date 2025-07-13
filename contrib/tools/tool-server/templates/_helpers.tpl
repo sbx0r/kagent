@@ -65,5 +65,5 @@ Create the name of the service account to use
 Create the tools server URL
 */}}
 {{- define "tools.serverUrl" -}}
-{{- printf "http://%s.%s.svc.cluster.local:%d/sse" (include "tools.fullname" .) .Release.Namespace (.Values.service.port | int) }}
+{{- printf "http://%s.%s.svc.cluster.local:%d/mcp" (include "tools.fullname" .) .Release.Namespace (.Values.service.port | int) }}
 {{- end }}

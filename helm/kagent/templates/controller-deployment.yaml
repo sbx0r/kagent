@@ -69,7 +69,7 @@ spec:
               protocol: TCP
           readinessProbe:
             tcpSocket:
-              port: http-controller
+              port: http
             initialDelaySeconds: 15
             periodSeconds: 15
           volumeMounts:
