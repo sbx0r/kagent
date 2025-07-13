@@ -30,12 +30,7 @@ RUN addgroup -g 1001 pythongroup                       && \
 USER python
 WORKDIR /app/python
 
-### STAGE 2 : download tools
-FROM mcp/grafana:latest AS mcp-grafana
-ARG TOOLS_GRAFANA_MCP_VERSION
-LABEL org.opencontainers.image.source="mcp/grafana${TOOLS_GRAFANA_MCP_VERSION}"
-
-### STAGE 3: final
+### STAGE 2: final
 FROM python-os AS final
 ARG TOOLS_PYTHON_VERSION
 
@@ -63,9 +58,6 @@ ENV UV_OFFLINE=1
 
 # Test if the tool is working and fetch all dependencies
 RUN uv run kagent-engine --help
-
- # Grafana MCP
-COPY --from=mcp-grafana /app/mcp-grafana /app/python/bin/mcp-grafana
 
 EXPOSE 8081
 ARG VERSION
