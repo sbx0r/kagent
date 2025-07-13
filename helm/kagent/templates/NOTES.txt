@@ -9,7 +9,7 @@ ACCESSING THE UI:
      kubectl -n {{ include "kagent.namespace" . }} port-forward service/{{ include "kagent.fullname" . }}-ui 8080:{{ .Values.ui.service.ports.port }}
 
   2. Open your browser and visit:
-     http://localhost:{{ .Values.ui.service.ports.port }}
+     http://localhost:8080
 
 ACCESSING THE CONTROLLER API:
   kubectl -n {{ include "kagent.namespace" . }} port-forward service/{{ include "kagent.fullname" . }} {{ .Values.controller.service.ports.port }}:{{ .Values.controller.service.ports.port }}
