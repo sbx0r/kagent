@@ -35,8 +35,10 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "tools.fullname" . }}
+            {{- if .Values.openai.apiKey }}
             - secretRef:
                 name: {{ include "tools.fullname" . }}-api-key
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
