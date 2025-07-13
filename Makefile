@@ -262,6 +262,7 @@ helm-install-provider: helm-version check-openai-key
 		--set ui.image.tag=$(UI_IMAGE_TAG) \
 		--set controller.image.registry=$(RETAGGED_DOCKER_REGISTRY) \
 		--set controller.image.tag=$(CONTROLLER_IMAGE_TAG) \
+		$(if $(CI),--set controller.service.type=LoadBalancer) \
 		--set engine.image.registry=$(RETAGGED_DOCKER_REGISTRY) \
 		--set engine.image.tag=$(APP_IMAGE_TAG) \
 		--set providers.openAI.apiKey=$(OPENAI_API_KEY) \
