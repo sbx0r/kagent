@@ -79,10 +79,14 @@ jobs:
           kubectl wait --for=condition=Accepted  agents.kagent.dev -n kagent --all --timeout=60s
 
       - name: Run e2e tests
+        working-directory: go
         run: |
-          export KAGENT_API_URL="http://$(kubectl get svc -n kagent kagent -o jsonpath='{.status.loadBalancer.ingress[0].ip}'):8083/api"
-          echo $KAGENT_API_URL
-          cd go
+          kubectl port-forward -n kagent services/kagent 8083:8083 &
+          timeout 30 bash -c 'until curl -s http://localhost:8083/health >/dev/null 2>&1; do sleep 1; done'
+
+          export GW_IP="localhost"                                                                                      
+          export KAGENT_A2A_URL="http://${GW_IP}:8083/api/a2a"                                                          
+
           go test -v -run ^TestInvokeAPI$ github.com/kagent-dev/kagent/go/test/e2e
 
   go-unit-tests:
