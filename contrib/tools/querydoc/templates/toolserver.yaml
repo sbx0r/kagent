@@ -8,7 +8,6 @@ metadata:
 spec:
   config:
     streamableHttp:
-      sseReadTimeout: 5m0s
       timeout: 30s
       url: {{ include "querydoc.serverUrl" . }}
   description: "Documentation Query Tool Server"
