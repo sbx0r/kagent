@@ -269,10 +269,12 @@ helm-install-provider: helm-version check-openai-key
 		--set providers.azureOpenAI.apiKey=$(AZUREOPENAI_API_KEY) \
 		--set providers.anthropic.apiKey=$(ANTHROPIC_API_KEY) \
 		--set providers.default=$(KAGENT_DEFAULT_MODEL_PROVIDER) \
-		--set querydoc.config.openaiApiKey=$(OPENAI_API_KEY) \
-		--set tool-server.openai.apiKey=$(OPENAI_API_KEY) \
+		$(if $(OPENAI_API_KEY),--set querydoc.enabled=false) \
+		$(if $(OPENAI_API_KEY),--set querydoc.config.openaiApiKey=$(OPENAI_API_KEY)) \
+		$(if $(OPENAI_API_KEY),--set tool-server.enabled=false) \
+		$(if $(OPENAI_API_KEY),--set tool-server.openai.apiKey=$(OPENAI_API_KEY)) \
 		$(if $(GRAFANA_API_KEY),--set mcp-grafana.enabled=true,) \
-		$(if $(GRAFANA_API_KEY),--set mcp-grafana.connection.apiKey=$(GRAFANA_API_KEY),) \
+		$(if $(GRAFANA_API_KEY),--set mcp-grafana.connection.apiKey=$(GRAFANA_API_KEY)) \
 		$(KAGENT_HELM_EXTRA_ARGS)
 
 .PHONY: helm-install
