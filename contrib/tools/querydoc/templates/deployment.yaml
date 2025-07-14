@@ -13,9 +13,7 @@ spec:
   template:
     metadata:
       annotations:
-        {{- if .Values.config }}
         checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-        {{- end }}
         {{- if .Values.openai.apiKey }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         {{- end }}
@@ -32,10 +30,8 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           envFrom:
-            {{- if .Values.config }}
             - configMapRef:
                 name: {{ include "querydoc.fullname" . }}
-            {{- end }}
             {{- if .Values.openai.apiKey }}
             - secretRef:
                 name: {{ include "querydoc.fullname" . }}
