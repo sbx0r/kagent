@@ -36,8 +36,10 @@ spec:
             - configMapRef:
                 name: {{ include "querydoc.fullname" . }}
             {{- end }}
+            {{- if .Values.openai.apiKey }}
             - secretRef:
                 name: {{ include "querydoc.fullname" . }}
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port | default 8080 }}
