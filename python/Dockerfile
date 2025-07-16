@@ -8,7 +8,12 @@ RUN --mount=type=cache,target=/var/cache/apk,rw \
     apk update && apk add  \
     curl openssl bash git ca-certificates uv nodejs-22 npm
 
-### STAGE 2: python
+### STAGE 2 : download tools
+FROM mcp/grafana:latest AS mcp-grafana
+ARG TOOLS_GRAFANA_MCP_VERSION
+LABEL org.opencontainers.image.source="mcp/grafana${TOOLS_GRAFANA_MCP_VERSION}"
+
+### STAGE 3: python
 FROM base-os AS python-os
 ARG TOOLS_PYTHON_VERSION=3.12
 
@@ -58,6 +63,9 @@ ENV UV_OFFLINE=1
 
 # Test if the tool is working and fetch all dependencies
 RUN uv run kagent-engine --help
+
+ # Grafana MCP
+COPY --from=mcp-grafana /app/mcp-grafana /app/python/bin/mcp-grafana
 
 EXPOSE 8081
 ARG VERSION
