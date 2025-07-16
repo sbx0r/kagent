@@ -39,8 +39,8 @@ controller:
   loglevel: "info"
 
   # -- Namespaces the controller should watch.
-  # If empty, the controller will watch ONLY release namespace.
-  # @default -- [] (watches release namespace)
+  # If empty, the controller will watch ALL available namespaces.
+  # @default -- [] (watches all available namespaces)
   watchNamespaces: []
   #  - watch-ns-1
   #  - watch-ns-2
@@ -208,23 +208,6 @@ querydoc:
       cpu: 500m
       memory: 512Mi
   openai:
-    apiKey: ""
-mcp-grafana:
-  enabled: false
-  replicas: 1
-  image:
-    registry: docker.io
-    repository: mcp/grafana
-    tag: latest
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
-  connection:
-    url: "http://grafana.kagent.svc.cluster.local:3000"
     apiKey: ""
 
 # ==============================================================================
