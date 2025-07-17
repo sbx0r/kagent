@@ -273,17 +273,15 @@ helm-install-provider: helm-version check-openai-key
 		--set ui.image.tag=$(UI_IMAGE_TAG) \
 		--set controller.image.registry=$(RETAGGED_DOCKER_REGISTRY) \
 		--set controller.image.tag=$(CONTROLLER_IMAGE_TAG) \
-		$(if $(CI),--set controller.service.type=LoadBalancer) \
+		--set controller.service.type=LoadBalancer \
 		--set engine.image.registry=$(RETAGGED_DOCKER_REGISTRY) \
 		--set engine.image.tag=$(APP_IMAGE_TAG) \
 		--set providers.openAI.apiKey=$(OPENAI_API_KEY) \
 		--set providers.azureOpenAI.apiKey=$(AZUREOPENAI_API_KEY) \
 		--set providers.anthropic.apiKey=$(ANTHROPIC_API_KEY) \
 		--set providers.default=$(KAGENT_DEFAULT_MODEL_PROVIDER) \
-		$(if $(OPENAI_API_KEY),,--set querydoc.enabled=false) \
-		$(if $(OPENAI_API_KEY),--set querydoc.openai.apiKey=$(OPENAI_API_KEY)) \
-		$(if $(OPENAI_API_KEY),,--set tool-server.enabled=false) \
-		$(if $(OPENAI_API_KEY),--set tool-server.openai.apiKey=$(OPENAI_API_KEY)) \
+		--set querydoc.openai.apiKey=$(OPENAI_API_KEY) \
+		--set tool-server.openai.apiKey=$(OPENAI_API_KEY) \
 		$(KAGENT_HELM_EXTRA_ARGS)
 
 .PHONY: helm-install
