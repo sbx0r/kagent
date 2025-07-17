@@ -90,8 +90,7 @@ engine:
     ports:
       port: 8081
       targetPort: 8081
-  config:
-    AUTOGENSTUDIO_CORS_ALLOW_ORIGINS: "*" # just for now
+  config: {}
 
 ui:
   replicas: 1
@@ -161,6 +160,11 @@ tool-server:
     apiKey: ""
   loglevel: "debug"
   config: {}
+
+tools:
+  grafana:
+    url: http://grafana.kagent.svc.cluster.local:3000
+    apiKey: ""
 
 # ==============================================================================
 # AGENTS
