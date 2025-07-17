@@ -2,8 +2,8 @@ apiVersion: v2
 name: querydoc
 description: Document query MCP server for kagent
 type: application
-version: v0.1.0
-appVersion: 1.1.8
+version: ${VERSION}
+appVersion: 1.1.10
 sources:
   - https://github.com/kagent-dev/doc2vec
   - https://github.com/kagent-dev/kagent

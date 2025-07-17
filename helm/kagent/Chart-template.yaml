@@ -5,12 +5,12 @@ type: application
 version: ${VERSION}
 dependencies:
   - name: tool-server
-    version: v0.1.0
-    repository: file://../../contrib/tools/tool-server
+    version: ${VERSION}
+    repository: file://../tools/tool-server
     condition: tool-server.enabled
   - name: querydoc
-    version: v0.1.0
-    repository: file://../../contrib/tools/querydoc
+    version: ${VERSION}
+    repository: file://../tools/querydoc
     condition: external-mcp.querydoc.enabled
   - name: k8s-agent
     version: ${VERSION}

@@ -2,7 +2,7 @@ apiVersion: v2
 name: tool-server
 description: Kagent's Tool Server
 type: application
-version: v0.1.0
+version: ${VERSION}
 appVersion: 0.0.7
 sources:
   - https://github.com/kagent-dev/tools
