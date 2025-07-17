@@ -12,10 +12,6 @@ dependencies:
     version: v0.1.0
     repository: file://../../contrib/tools/querydoc
     condition: external-mcp.querydoc.enabled
-  - name: mcp-grafana
-    version: v0.1.0
-    repository: file://../../contrib/tools/mcp-grafana
-    condition: external-mcp.mcp-grafana.enabled
   - name: k8s-agent
     version: ${VERSION}
     repository: file://../agents/k8s

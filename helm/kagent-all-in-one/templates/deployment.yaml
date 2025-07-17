@@ -217,4 +217,3 @@ spec:
             - name: http-querydoc
               containerPort: {{ .Values.service.ports.querydoc.targetPort }}
               protocol: TCP
-        {{ end }}

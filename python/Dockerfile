@@ -8,12 +8,7 @@ RUN --mount=type=cache,target=/var/cache/apk,rw \
     apk update && apk add  \
     curl openssl bash git ca-certificates uv nodejs-22 npm
 
-### STAGE 2 : download tools
-FROM mcp/grafana:latest AS mcp-grafana
-ARG TOOLS_GRAFANA_MCP_VERSION
-LABEL org.opencontainers.image.source="mcp/grafana${TOOLS_GRAFANA_MCP_VERSION}"
-
-### STAGE 3: python
+### STAGE 2: python
 FROM base-os AS python-os
 ARG TOOLS_PYTHON_VERSION=3.12
 
@@ -35,7 +30,12 @@ RUN addgroup -g 1001 pythongroup                       && \
 USER python
 WORKDIR /app/python
 
-### STAGE 2: final
+### STAGE 3 : download tools
+FROM mcp/grafana:latest AS mcp-grafana
+ARG TOOLS_GRAFANA_MCP_VERSION
+LABEL org.opencontainers.image.source="mcp/grafana${TOOLS_GRAFANA_MCP_VERSION}"
+
+### STAGE 4: final
 FROM python-os AS final
 ARG TOOLS_PYTHON_VERSION
 

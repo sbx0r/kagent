@@ -26,9 +26,6 @@ DEPLOYED COMPONENTS:
 {{- if index .Values "querydoc" "enabled" }}
   - QueryDoc: Document search and analysis
 {{- end }}
-{{- if index .Values "mcp-grafana" "enabled" }}
-  - Grafana MCP: Grafana integration
-{{- end }}
 
 ENABLED AGENTS:
 {{- range $agent, $config := .Values.agents }}

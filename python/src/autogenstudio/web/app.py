@@ -23,15 +23,6 @@ from .routes import (
 # Create FastAPI application
 app = FastAPI(debug=True)
 
-# CORS middleware configuration
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.cors_origins_list,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 # Create API router with version and documentation
 api = FastAPI(
     root_path="/api",
