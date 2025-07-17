@@ -234,8 +234,15 @@ helm-agents:
 	VERSION=$(VERSION) envsubst < helm/agents/cilium-manager/Chart-template.yaml > helm/agents/cilium-manager/Chart.yaml
 	helm package -d $(HELM_DIST_FOLDER) helm/agents/cilium-manager
 
+.PHONY: helm-tools
+helm-tools:
+	VERSION=$(VERSION) envsubst < helm/tools/tool-server/Chart-template.yaml > helm/tools/tool-server/Chart.yaml
+	helm package -d $(HELM_DIST_FOLDER) helm/tools/tool-server
+	VERSION=$(VERSION) envsubst < helm/tools/querydoc/Chart-template.yaml > helm/tools/querydoc/Chart.yaml
+	helm package -d $(HELM_DIST_FOLDER) helm/tools/querydoc
+
 .PHONY: helm-version
-helm-version: helm-cleanup helm-agents
+helm-version: helm-cleanup helm-agents helm-tools
 	VERSION=$(VERSION) envsubst < helm/kagent-crds/Chart-template.yaml > helm/kagent-crds/Chart.yaml
 	VERSION=$(VERSION) envsubst < helm/kagent/Chart-template.yaml > helm/kagent/Chart.yaml
 	VERSION=$(VERSION) envsubst < helm/kagent-all-in-one/Chart-template.yaml > helm/kagent-all-in-one/Chart.yaml
