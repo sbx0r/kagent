@@ -12,12 +12,12 @@ ACCESSING THE UI:
      http://localhost:8080
 
 ACCESSING THE CONTROLLER API:
-  kubectl -n {{ include "kagent.namespace" . }} port-forward service/{{ include "kagent.fullname" . }} {{ .Values.controller.service.ports.port }}:{{ .Values.controller.service.ports.port }}
+  kubectl -n {{ include "kagent.namespace" . }} port-forward service/{{ include "kagent.fullname" . }}-controller {{ .Values.controller.service.ports.port }}:{{ .Values.controller.service.ports.port }}
   
   API endpoint: http://localhost:{{ .Values.controller.service.ports.port }}/api
 
 DEPLOYED COMPONENTS:
-  - Controller: {{ include "kagent.fullname" . }} (manages Kubernetes resources)
+  - Controller: {{ include "kagent.fullname" . }}-controller (manages Kubernetes resources)
   - Engine: {{ include "kagent.fullname" . }}-engine (AI agent runtime)
   - UI: {{ include "kagent.fullname" . }}-ui (web interface)
 {{- if index .Values "tool-server" "enabled" }}
