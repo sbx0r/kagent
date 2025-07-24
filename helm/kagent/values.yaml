@@ -177,11 +177,6 @@ tool-server:
       username: ""
       password: ""
 
-tools:
-  grafana:
-    url: http://grafana.kagent.svc.cluster.local:3000
-    apiKey: ""
-
 # ==============================================================================
 # AGENTS
 # ==============================================================================
@@ -229,21 +224,11 @@ querydoc:
       memory: 512Mi
   openai:
     apiKey: ""
-mcp-grafana:
-  enabled: false
-  replicas: 1
-  image:
-    registry: docker.io
-    repository: mcp/grafana
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
-  connection:
-    url: "http://grafana.kagent.svc.cluster.local:3000"
+
+# That one is embedded into kagent-engine
+tools:
+  grafana:
+    url: http://grafana.kagent.svc.cluster.local:3000
     apiKey: ""
 
 # ==============================================================================
