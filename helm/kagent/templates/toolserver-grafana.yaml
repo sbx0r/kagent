@@ -7,7 +7,7 @@ metadata:
     {{- include "kagent.labels" . | nindent 4 }}
 type: Opaque
 stringData:
-  apiKey: {{ .Values.tools.grafana.apiKey }}
+  apiKey: {{ .Values.tools.grafana.apiKey | default "fake" }}
 ---
 apiVersion: kagent.dev/v1alpha1
 kind: ToolServer
@@ -31,4 +31,4 @@ spec:
           type: Secret
           key: "apiKey"
           valueRef: {{ include "kagent.fullname" . }}-mcp-grafana
-  description: ""
+  description: "Toolserver for Official Grafana MCP Server"

@@ -68,7 +68,7 @@ controller:
     ports:
       port: 8083
       targetPort: 8083
-  config: {} # Additional configuration key-value pairs for the controller ConfigMap
+  env: {}
   database:
     type: sqlite
     sqlite:
@@ -96,7 +96,7 @@ engine:
     ports:
       port: 8081
       targetPort: 8081
-  config: {}
+  env: {}
 
 ui:
   replicas: 1
@@ -117,7 +117,7 @@ ui:
     ports:
       port: 80
       targetPort: 8080
-  config: {} # Additional configuration key-value pairs for the ui ConfigMap
+  env: {} # Additional configuration key-value pairs for the ui ConfigMap
 
 # ==============================================================================
 # LLM PROVIDERS CONFIGURATION
@@ -159,13 +159,12 @@ providers:
 # BUILT-IN TOOLS
 # ==============================================================================
 
-tool-server:
+kagent-tools:
+  fullnameOverride: kagent-tools
   enabled: true
-  replicas: 1
-  openai:
-    apiKey: ""
-  loglevel: "debug"
-  config: {}
+  replicaCount: 1
+  tools:
+    loglevel: "debug"
 
 tools:
   grafana:
@@ -208,7 +207,7 @@ querydoc:
   image:
     registry: ghcr.io
     repository: kagent-dev/doc2vec/mcp
-    tag: 1.1.10
+    tag: 1.1.12
     pullPolicy: IfNotPresent
   resources:
     requests:

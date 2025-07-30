@@ -13,7 +13,7 @@ tests:
           of: ServiceAccount
       - equal:
           path: metadata.name
-          value: RELEASE-NAME
+          value: RELEASE-NAME-controller
       - hasDocuments:
           count: 1
 
@@ -75,7 +75,7 @@ tests:
           value: ServiceAccount
       - equal:
           path: subjects[0].name
-          value: RELEASE-NAME
+          value: RELEASE-NAME-controller
       - equal:
           path: subjects[0].namespace
           value: NAMESPACE

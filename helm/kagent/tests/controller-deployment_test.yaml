@@ -10,7 +10,7 @@ tests:
           of: Deployment
       - equal:
           path: metadata.name
-          value: RELEASE-NAME
+          value: RELEASE-NAME-controller
       - equal:
           path: spec.replicas
           value: 1
@@ -67,7 +67,7 @@ tests:
     asserts:
       - equal:
           path: spec.template.spec.serviceAccountName
-          value: RELEASE-NAME
+          value: RELEASE-NAME-controller
 
   - it: should have correct container port
     template: controller-deployment.yaml

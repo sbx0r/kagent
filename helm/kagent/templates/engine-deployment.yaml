@@ -13,7 +13,6 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/configmap: {{ include (print $.Template.BasePath "/engine-configmap.yaml") . | sha256sum }}
         {{- with .Values.engine.podAnnotations | default .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -33,9 +32,22 @@ spec:
             {{- toYaml (.Values.engine.securityContext | default .Values.securityContext) | nindent 12 }}
           image: "{{ .Values.engine.image.registry }}/{{ .Values.engine.image.repository }}:{{ coalesce .Values.tag .Values.engine.image.tag .Chart.Version }}"
           imagePullPolicy: {{ .Values.engine.image.pullPolicy | default .Values.imagePullPolicy }}
-          envFrom:
-            - configMapRef:
-                name: {{ include "kagent.fullname" . }}-engine
+          env:
+            - name: LOG_LEVEL
+              value: {{ .Values.engine.loglevel | quote }}
+            - name: OTEL_TRACING_ENABLED
+              value: {{ .Values.otel.tracing.enabled | quote }}
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: {{ .Values.otel.tracing.exporter.otlp.endpoint | quote }}
+            - name: OTEL_EXPORTER_OTLP_TRACES_TIMEOUT
+              value: {{ .Values.otel.tracing.exporter.otlp.timeout | quote }}
+            - name: OTEL_EXPORTER_OTLP_TRACES_INSECURE
+              value: {{ .Values.otel.tracing.exporter.otlp.insecure | quote }}
+            - name: AUTOGEN_DISABLE_RUNTIME_TRACING
+              value: "true"
+            {{- with .Values.engine.env }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.engine.service.ports.targetPort }}
