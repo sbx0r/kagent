@@ -103,7 +103,7 @@ ui:
   image:
     registry: cr.kagent.dev
     repository: kagent-dev/kagent/ui
-    tag: "" # Will default to global, then Chart version
+    tag: ""
     pullPolicy: IfNotPresent
   resources:
     requests:

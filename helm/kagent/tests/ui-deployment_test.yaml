@@ -1,7 +1,6 @@
 suite: test ui deployment
 templates:
   - ui-deployment.yaml
-  - ui-configmap.yaml
 tests:
   - it: should render ui deployment with default values
     template: ui-deployment.yaml

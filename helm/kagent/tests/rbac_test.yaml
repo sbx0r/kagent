@@ -39,6 +39,28 @@ tests:
       - hasDocuments:
           count: 1
 
+  - it: should render engine serviceaccount
+    template: engine-serviceaccount.yaml
+    asserts:
+      - isKind:
+          of: ServiceAccount
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-engine
+      - hasDocuments:
+          count: 1
+
+  - it: should render ui serviceaccount
+    template: ui-serviceaccount.yaml
+    asserts:
+      - isKind:
+          of: ServiceAccount
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-ui
+      - hasDocuments:
+          count: 1
+
   - it: should render two clusterroles
     template: rbac/clusterrole.yaml
     asserts:

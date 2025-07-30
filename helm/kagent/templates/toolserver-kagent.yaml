@@ -2,10 +2,14 @@ apiVersion: kagent.dev/v1alpha1
 kind: ToolServer
 metadata:
   name: {{ include "kagent.fullname" . }}-tool-server
-  namespace: kagent
+  namespace: {{ include "kagent.namespace" . }}
+  labels:
+    {{- include "kagent.labels" . | nindent 4 }}
 spec:
   config:
     type: streamableHttp
     streamableHttp:
-      url: "http://{{ include "kagent.fullname" . }}-tools.{{ include "kagent.namespace" . }}.svc.cluster.local:8084/api"
+      url: "http://{{ include "kagent.fullname" . }}-tools.{{ include "kagent.namespace" . }}.svc.cluster.local:8084/mcp"
+      timeout: 30s
+      sseReadTimeout: 5m0s
   description: "Oficial KAgent tool server"
